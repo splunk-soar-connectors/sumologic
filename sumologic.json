@@ -1,0 +1,396 @@
+{
+  "appid": "8e235e70-57eb-4292-9b7c-6cc44847d837",
+  "name": "Sumo Logic",
+  "description": "This app integrates with the Sumo Logic cloud platform to implement investigative actions like <b>run query</b> and <b>get results</b>.",
+  "publisher": "Phantom",
+  "type": "siem",
+  "main_module": "sumologic_connector.pyc",
+    "app_version": "1.0.17",
+    "utctime_updated": "2017-01-11T02:25:31.000000Z",
+  "package_name": "phantom_sumologic",
+  "product_name": "Sumo Logic",
+  "product_vendor": "Sumo Logic",
+  "product_version_regex": ".*",
+  "min_phantom_version": "2.0.264",
+  "logo": "sumologic.png",
+  "license": "Copyright (c) Phantom Cyber Corporation 2016-2017",
+  "configuration": {
+    "environment": {
+      "description": "Environment Pod",
+      "data_type": "string",
+      "order": 0,
+      "required": true,
+      "value_list": ["us1", "us2", "eu", "au"]
+    },
+    "access_id": {
+      "description": "Access ID",
+      "data_type": "string",
+      "order": 1,
+      "required": true
+    },
+    "access_key": {
+      "description": "Access Key",
+      "data_type": "string",
+      "order": 2,
+      "required": true
+    },
+    "timezone": {
+      "description": "Sumo Logic Timezone",
+      "data_type": "timezone",
+      "order": 3,
+      "required": true
+    }
+  },
+  "actions": [
+    {
+      "action": "test connectivity",
+      "description": "validate the asset configuration for connectivity",
+      "verbose": "This action uses the unique access ID and access key to send a request to the Sumo Logic API to retrieve a single collector.",
+      "type": "test",
+      "identifier": "test_asset_connectivity",
+      "read_only": true,
+      "parameters": {},
+      "output": [],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "get results",
+      "description": "Retrieves the result of a search job",
+      "verbose": "<p>This action takes a Search Job ID as its primary parameter.</p><p>This is useful if the search job times out in run query.  It is not, however, guaranteed to return if the Search Job had already finished - once a Search Job has been completed, the Sumo Logic platform deletes the Search Job after an unknown amount of time, resulting in the action failing even though the search job ID may be correct.</p>",
+      "type": "investigate",
+      "identifier": "get_results",
+      "read_only": true,
+      "parameters": {
+        "search_id": {
+          "description": "Search id",
+          "data_type": "string",
+          "order": 0,
+          "required": true,
+          "primary": true,
+          "contains": [
+            "search id"
+          ]
+        }
+      },
+  "render": {
+    "width": 12,
+    "title": "Get Results",
+    "type": "table",
+    "height": 5
+  },
+  "output": [
+    {
+      "data_path": "action_result.data.*.fields.*.name",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.fields.*.keyField",
+      "data_type": "boolean"
+    },
+    {
+      "data_path": "action_result.data.*.fields.*.fieldType",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._raw",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._size",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._format",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._source",
+      "data_type": "string",
+      "column_order": 6,
+      "column_name": "Source"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._blockid",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._sourceid",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._collector",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._messageid",
+      "data_type": "string",
+      "column_order": 5,
+      "column_name": "Message ID"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._sourcehost",
+      "data_type": "string",
+      "contains": ["ip"]
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._sourcename",
+      "data_type": "string",
+      "column_order": 4,
+      "column_name": "Source Name"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._collectorid",
+      "data_type": "string",
+      "column_order": 3,
+      "column_name": "Collector ID"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._messagetime",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._receipttime",
+      "data_type": "string",
+      "column_order": 1,
+      "column_name": "Receipt Time"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._messagecount",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.data.*.messages.*.map._sourcecategory",
+      "data_type": "string",
+      "column_order": 0,
+      "column_name": "Source"
+    },
+    {
+      "data_path": "action_result.summary.search_id",
+      "data_type": "string",
+      "contains": ["search id"]
+    },
+    {
+      "data_path": "action_result.status",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.message",
+      "data_type": "string"
+    },
+    {
+      "data_path": "action_result.summary.total_objects",
+      "data_type": "numeric"
+    },
+    {
+      "data_path": "action_result.parameter.search_id",
+      "data_type": "string",
+      "contains": ["search id"]
+    },
+    {
+      "data_path": "summary.total_objects",
+      "data_type": "numeric"
+    },
+    {
+      "data_path": "summary.total_objects_successful",
+      "data_type": "numeric"
+    }
+  ],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "run query",
+      "description": "Runs a search query on the Sumo Logic platform",
+      "verbose": "<p>Run Query takes advantage of the Search Job API.</p><p><b>PLEASE NOTE:</b>  If you do not have an Enterprise license with Sumo Logic, the Search Job API is not available to you.  This action will only work if the accessId and the accessKey are associated with an Enterprise-level account.</p><p><b>Run Query</b> takes five different parameters.  Some notes:</p><ul><li><b>query</b> - text does not have to be escaped.</li><li><b>from_time</b> - Must be UNIX timestamp.  Default value is five days ago.</li><li><b>to_time</b> - Must be UNIX timestamp.  Default value is the current time.</li><li><b>limit</b> - Limiting the messages can be ideal if the query returns a large amount.  The default limit is 100.</li><li><b>type</b> - Either <i>messages</i> or an aggregate <i>record</i>.  Record will be significantly smaller.  If none is specified, it will default to <i>messages</i>.</li></ul><p>The Search Job API is asynchronous and requires polling.  The <b>run query</b> action will poll for up to 60 seconds.</p><ul><li>If the query finishes before the time limit, the action will succeed and the data will be added to the action result.</li><li>If the query does not finish before the time limit, the action will still succeed - but the search job ID (action_result.summary.search_id) will be added to the summary.  This Search Job ID can then be used in <b>get results</b></li></ul>",
+      "type": "investigate",
+      "identifier": "run_query",
+      "read_only": true,
+      "parameters": {
+        "query": {
+          "description": "Query to run",
+          "data_type": "string",
+          "order": 0,
+          "required": true,
+          "primary": true,
+          "contains": ["sumo logic query"]
+        },
+        "from_time": {
+          "description": "UNIX start time for search",
+          "data_type": "numeric",
+          "order": 2,
+          "required": false,
+          "primary": false
+        },
+        "to_time": {
+          "description": "UNIX end time for search",
+          "data_type": "numeric",
+          "order": 3,
+          "required": false,
+          "primary": false
+        },
+        "limit": {
+          "description": "Upper limit of message response results",
+          "data_type": "numeric",
+          "order": 4,
+          "required": false,
+          "primary": false,
+          "default": 100
+        },
+        "type": {
+          "description": "Type of response to receive",
+          "data_type": "string",
+          "order": 5,
+          "required": false,
+          "primary": false,
+          "value_list": ["messages", "records"],
+          "default": "messages"
+        }
+      },
+      "render": {
+          "type": "json",
+          "width": 12,
+          "height": 5,
+          "title": "Search Results"
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.fields.*.name",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.fields.*.keyField",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.fields.*.fieldType",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._raw",
+          "data_type": "string",
+          "column_order": 1,
+          "column_name": "Raw"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._size",
+          "data_type": "string",
+          "column_order": 3,
+          "column_name": "Size"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._format",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._source",
+          "data_type": "string",
+          "column_order": 4,
+          "column_name": "Source"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._blockid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourceid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._collector",
+          "data_type": "string",
+          "column_order": 2,
+          "column_name": "Collector"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._messageid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourcehost",
+          "data_type": "string",
+          "column_order": 6,
+          "column_name": "Source Host",
+          "contains": ["ip"]
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourcename",
+          "data_type": "string",
+          "column_order": 7,
+          "column_name": "Source Name"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._collectorid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._messagetime",
+          "data_type": "string",
+          "column_order": 0,
+          "column_name": "Message Time (MS)"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._receipttime",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._messagecount",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourcecategory",
+          "data_type": "string",
+          "column_order": 5,
+          "column_name": "Source Category"
+        },
+        {
+          "data_path": "action_result.summary.search_id",
+          "data_type": "string",
+          "contains": ["search id"]
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.summary.total_objects",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.parameter.query",
+          "data_type": "string",
+          "contains": ["sumo logic query"]
+        },
+        {
+          "data_path": "action_result.parameter.from_time",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.to_time",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.limit",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.parameter.type",
+          "data_type": "string"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric"
+        }
+      ],
+      "versions": "EQ(*)"
+    }
+    ]
+  }
+
+
