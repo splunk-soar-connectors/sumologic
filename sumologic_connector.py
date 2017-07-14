@@ -20,7 +20,7 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 import sumologic_parser
-from sumologic import SumoLogic
+import sumologic
 from sumologic_consts import *
 
 import imp
@@ -73,8 +73,7 @@ class SumoLogicConnector(BaseConnector):
 
         # Try to make the sumologic object
         try:
-            self._sumo = SumoLogic(access_id, access_key, endpoint=api_endpoint,
-                    cookieFile='/opt/phantom/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')
+            self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile='/opt/phantom/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
         except Exception as e:
             return self.set_status(phantom.APP_ERROR, SUMOLOGIC_ERR_CONNECTION_FAILED, e)
 
