@@ -144,14 +144,21 @@ class SumoLogicConnector(BaseConnector):
             # App error when the state changes to cancelled
             if status['state'] == 'CANCELLED':
 
-                return action_result.set_status(phantom.APP_ERROR, "Search Job was cancelled before finishing")
+                action_result.set_status(phantom.APP_ERROR, "Search Job was cancelled before finishing")
+                return status
+
+            if status['state'] == 'PAUSED' or status['state'] == 'FORCE PAUSED':
+
+                action_result.set_status(phantom.APP_ERROR, "Search job has been paused")
+                return status
 
             # Don't want to be polling forever, so just succeed and give the actionable ID as a result
             elif end and delay >= SUMOLOGIC_POLLING_TIME_LIMIT:
 
                 action_result.set_summary({'search_id': search_job['id']})
 
-                return action_result.set_status(phantom.APP_SUCCESS)
+                action_result.set_status(phantom.APP_SUCCESS)
+                return status
 
             # Add a delay so that the server doesn't get overloaded
             time.sleep(delay)
@@ -251,6 +258,7 @@ class SumoLogicConnector(BaseConnector):
         to_time = self._now()
         to_time = self._to_milliseconds(int(to_time))
 
+        query = config('on_poll_query', '*')
         try:
             query = config['on_poll_query']
         except KeyError:
@@ -273,9 +281,11 @@ class SumoLogicConnector(BaseConnector):
                 elif job_type == "records":
                     response = self._sumo.search_job_records(search_job, limit=limit)
                 else:
-                    return action_result.set_status(phantom.APP_ERROR, "Invalid job type")
+                    return action_result.set_status(phantom.APP_ERROR, "Invalid job type: {0}".format(job_type))
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, 'Error while getting results')
+        else:  # Job Status is something other than DONE GATHERING RESULTS
+            return action_result.get_status()
 
         parser = config.get('message_parser')
         if parser:

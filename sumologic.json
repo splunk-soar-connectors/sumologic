@@ -58,14 +58,15 @@
       "description": "Query to use during polling",
       "data_type": "string",
       "order": 5,
+      "default": "*",
       "required": false
     },
     "type": {
       "description": "Poll for messages or records",
       "data_type": "string",
       "order": 6,
-      "required": true,
-      "default": "message",
+      "required": false,
+      "default": "messages",
       "value_list": ["messages", "records"]
     },
     "message_parser": {

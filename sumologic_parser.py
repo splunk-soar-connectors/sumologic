@@ -55,9 +55,9 @@ def message_parser(response, query):
         cef = {}
 
         artifact_json['cef'] = cef
-        cef.update({'log_source': info['_sourcename']})
-        cef.update({'message': info['_raw']})
-        cef.update({'fsize': info['_size']})
+        cef['log_source'] = info['_sourcename']
+        cef['message'] = info['_raw']
+        cef['fsize'] = info['_size']
         ips = ip_regexc.findall(info['_raw'])
         size = len(ips)
         if size >= 1:
