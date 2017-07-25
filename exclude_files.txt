@@ -1,2 +1,4 @@
-*.py
+__init__.py
+sumologic_connector.py
+sumologic_consts.py
 .git*
