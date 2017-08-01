@@ -19,8 +19,11 @@ import phantom.app as phantom
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-from sumologic import SumoLogic
+import sumologic_parser
+import sumologic
 from sumologic_consts import *
+
+import imp
 
 
 class SumoLogicConnector(BaseConnector):
@@ -28,6 +31,7 @@ class SumoLogicConnector(BaseConnector):
     ACTION_ID_RUN_QUERY = 'run_query'
     ACTION_ID_TEST_ASSET_CONNECTIVITY = 'test_asset_connectivity'
     ACTION_ID_GET_RESULTS = 'get_results'
+    ACTION_ID_ON_POLL = 'on_poll'
 
     def __init__(self):
 
@@ -36,6 +40,15 @@ class SumoLogicConnector(BaseConnector):
 
         # Initialize the sumo obj as None for checking later
         self._sumo = None
+        self._state = {}
+
+    def initialize(self):
+        self._state = self.load_state()
+        return phantom.APP_SUCCESS
+
+    def finalize(self):
+        self.save_state(self._state)
+        return phantom.APP_SUCCESS
 
     def _connect(self):
 
@@ -60,7 +73,7 @@ class SumoLogicConnector(BaseConnector):
 
         # Try to make the sumologic object
         try:
-            self._sumo = SumoLogic(access_id, access_key, endpoint=api_endpoint)
+            self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile='/opt/phantom/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
         except Exception as e:
             return self.set_status(phantom.APP_ERROR, SUMOLOGIC_ERR_CONNECTION_FAILED, e)
 
@@ -114,16 +127,14 @@ class SumoLogicConnector(BaseConnector):
 
         try:
             self._sumo.collectors(limit=1)
-
         except:
-
             return self.set_status(phantom.APP_ERROR)
 
         self.save_progress("Connection to Sumo Logic with the specified environment has succeeded.")
 
         return self.set_status(phantom.APP_SUCCESS)
 
-    def _poll_job(self, status, search_job, action_result):
+    def _poll_job(self, status, search_job, action_result, end=True):
 
         delay = 2
 
@@ -133,14 +144,21 @@ class SumoLogicConnector(BaseConnector):
             # App error when the state changes to cancelled
             if status['state'] == 'CANCELLED':
 
-                return action_result.set_status(phantom.APP_ERROR, "Search Job was cancelled before finishing")
+                action_result.set_status(phantom.APP_ERROR, "Search Job was cancelled before finishing")
+                return status
+
+            if status['state'] == 'PAUSED' or status['state'] == 'FORCE PAUSED':
+
+                action_result.set_status(phantom.APP_ERROR, "Search job has been paused")
+                return status
 
             # Don't want to be polling forever, so just succeed and give the actionable ID as a result
-            elif delay >= SUMOLOGIC_POLLING_TIME_LIMIT:
+            elif end and delay >= SUMOLOGIC_POLLING_TIME_LIMIT:
 
                 action_result.set_summary({'search_id': search_job['id']})
 
-                return action_result.set_status(phantom.APP_SUCCESS)
+                action_result.set_status(phantom.APP_SUCCESS)
+                return status
 
             # Add a delay so that the server doesn't get overloaded
             time.sleep(delay)
@@ -212,6 +230,112 @@ class SumoLogicConnector(BaseConnector):
 
             return action_result.set_status(phantom.APP_ERROR, 'Error while getting results')
 
+    def _on_poll(self, param):
+
+        if (phantom.is_fail(self._connect())):
+            return self.get_status()
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        config = self.get_config()
+
+        job_type = config['type']
+        if self.is_poll_now():
+            limit = int(param.get('artifact_count', 100))
+        else:
+            limit = int(config.get('max_messages', 10000))
+
+        self.debug_print("limit: ", limit)
+
+        if limit > 10000:
+            limit = 10000
+
+        from_time = self._state.get('last_query')
+        if not self.is_poll_now():
+            self._state['last_query'] = int(time.time() * 1000)  # ms since epoch
+
+        from_time = self._to_milliseconds(int(from_time))
+        to_time = self._now()
+        to_time = self._to_milliseconds(int(to_time))
+
+        query = config('on_poll_query', '*')
+        try:
+            query = config['on_poll_query']
+        except KeyError:
+            return action_result.set_status(phantom.APP_ERROR, "Need to specify query for polling action")
+
+        self.save_progress("Creating a search job")
+        try:
+            search_job = self._sumo.search_job(query, int(from_time), int(to_time))
+        except Exception as e:
+            return action_result.set_status(phantom.APP_ERROR, "Failed to start job search: {0}".format(str(e)))
+        self.save_progress("Waiting for search results")
+
+        status = self._sumo.search_job_status(search_job)
+
+        status = self._poll_job(status, search_job, action_result, end=False)
+        if status['state'] == 'DONE GATHERING RESULTS':
+            try:
+                if job_type == "messages":
+                    response = self._sumo.search_job_messages(search_job, limit=limit)
+                elif job_type == "records":
+                    response = self._sumo.search_job_records(search_job, limit=limit)
+                else:
+                    return action_result.set_status(phantom.APP_ERROR, "Invalid job type: {0}".format(job_type))
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, 'Error while getting results')
+        else:  # Job Status is something other than DONE GATHERING RESULTS
+            return action_result.get_status()
+
+        parser = config.get('message_parser')
+        if parser:
+            parser_name = config['message_parser__filename']
+            self.save_progress("Using specified parser: {0}".format(parser_name))
+
+            message_parser = imp.new_module("custom_parser")  # noqa
+            try:
+                exec parser in message_parser.__dict__
+                ret_dict_list = message_parser.message_parser(response, query)
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Unable to execute message parser: {0}".format(str(e)))
+        else:  # No parser method provided, use default one instead
+            if job_type == 'records':
+                return action_result.set_status(phantom.APP_ERROR, "Cannot get records with default parser")
+            ret_dict_list = sumologic_parser.message_parser(response, query)
+
+        for container_dict in ret_dict_list:
+            resp = self._save_container(container_dict, action_result)
+            if phantom.is_fail(resp):
+                return resp
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _save_container(self, container_dict, action_result):
+
+        container = container_dict.get('container')
+
+        ret_val, message, container_id = self.save_container(container)
+
+        if (not ret_val):
+            return action_result.set_status(phantom.APP_ERROR, message)
+
+        artifacts = container_dict.get('artifacts')
+
+        for artifact in artifacts:
+            artifact['container_id'] = container_id
+
+        if (hasattr(self, 'save_artifacts')):
+            status, message, artifact_id = self.save_artifacts(artifacts)
+            if phantom.is_fail(status):
+                return action_result.set_status(phantom.APP_ERROR, message)
+        else:
+            for artifact in artifacts:
+                 status, message, artifact_id = self.save_artifact(artifact)
+            if phantom.is_fail(status):
+                return action_result.set_status(phantom.APP_ERROR, message)
+
+        return phantom.APP_SUCCESS
+
     def _five_days_ago(self):
         return int(time.mktime(time.localtime())) - SUMOLOGIC_FIVE_DAYS_IN_SECONDS
 
@@ -234,6 +358,8 @@ class SumoLogicConnector(BaseConnector):
             result = self._test_connectivity()
         elif (action == self.ACTION_ID_GET_RESULTS):
             result = self._get_results(param)
+        elif (action == self.ACTION_ID_ON_POLL):
+            return self._on_poll(param)
 
         return result
 

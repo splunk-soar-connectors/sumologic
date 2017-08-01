@@ -1,19 +1,27 @@
 {
   "appid": "8e235e70-57eb-4292-9b7c-6cc44847d837",
   "name": "Sumo Logic",
-  "description": "This app integrates with the Sumo Logic cloud platform to implement investigative actions like <b>run query</b> and <b>get results</b>.",
+  "description": "This app integrates with the Sumo Logic cloud platform to implement investigative actions",
   "publisher": "Phantom",
   "type": "siem",
   "main_module": "sumologic_connector.pyc",
-    "app_version": "1.0.18",
-    "utctime_updated": "2017-04-29T02:30:36.000000Z",
+  "app_version": "1.1.0",
+  "utctime_updated": "2017-04-29T02:30:36.000000Z",
   "package_name": "phantom_sumologic",
   "product_name": "Sumo Logic",
   "product_vendor": "Sumo Logic",
   "product_version_regex": ".*",
-  "min_phantom_version": "2.0.264",
+  "min_phantom_version": "2.1.478",
   "logo": "sumologic.png",
   "license": "Copyright (c) Phantom Cyber Corporation 2016-2017",
+  "pip_dependencies": {
+    "wheel": [
+      {
+        "module": "sumologic",
+        "input_file": "wheels/sumologic_sdk-0.1.7-py2-none-any.whl"
+      }
+    ]
+  },  
   "configuration": {
     "environment": {
       "description": "Environment Pod",
@@ -39,6 +47,33 @@
       "data_type": "timezone",
       "order": 3,
       "required": true
+    },
+    "max_messages": {
+      "description": "Max messages to poll for",
+      "data_type": "numeric",
+      "order": 4,
+      "required": false
+    },
+    "on_poll_query": {
+      "description": "Query to use during polling",
+      "data_type": "string",
+      "order": 5,
+      "default": "*",
+      "required": false
+    },
+    "type": {
+      "description": "Poll for messages or records",
+      "data_type": "string",
+      "order": 6,
+      "required": false,
+      "default": "messages",
+      "value_list": ["messages", "records"]
+    },
+    "message_parser": {
+      "description": "Python file containing a message parsing method",
+      "data_type": "file",
+      "order": 7,
+      "required": false
     }
   },
   "actions": [
@@ -50,6 +85,40 @@
       "identifier": "test_asset_connectivity",
       "read_only": true,
       "parameters": {},
+      "output": [],
+      "versions": "EQ(*)"
+    },
+    {
+      "action": "on poll",
+      "description": "Run a query on Sumo Logic and ingest the results",
+      "verbose": "This will run a search for logs that have occurred since the end of the scheduled poll. Since there is a limit of 10000 messages, if there would be more than 10000 results in the specified job search, the oldest ones will be discarded.<br>When running <b>POLL NOW</b>, it will run from the time of the last scheduled poll, but will not change which messages the next scheduled poll will recieve.</br></br>Since each log file will be different, in order to use this action a parser method should be provided as a Python file. There is a provided file which will be used as a fallback and can also serve as starting point. In order to properly work, the provided file needs a few things.<ul><li>There must be a function named <b>message_parser</b></li><li>It must accept two parameters<ul><li>A response, which will be returned by the endpoints to either get messages or records from a search job (more info <a href=\"https://help.sumologic.com/APIs/About-the-Search-Job-API\">here</a>)</li><li>The query string, which will be the same one from the asset config</li></ul></li><li>It must return a list of dictionaries. Each dictionary will have a container and a list of artifacts to add to that container. These should match the JSON objects that a POST to <b>/api/containers</b> and <b>/api/artifacts</b> expect</li></ul><br><a href=\"/app_resource/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/sumologic_parser.py\">Here is the aforementioned parser file</a>.<br><pre class=\"shell\"><code>import datetime\nimport re\n\nIP_REGEX = r'\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'\n\n\n# This only assumes that the default fields exists\n# If your query is something like \"_SourceCategory=apache | parse \"GET * \" as url\",\n# then you can just reference the 'url' field\n# I'd imagine in writing a custom parser method that regexes should be unnecessary\ndef message_parser(response, query):\n    ret_json = {}\n    container_json = {}\n    artifact_list = []\n\n    ip_regexc = re.compile(IP_REGEX)\n\n    ret_json['artifacts'] = artifact_list\n    ret_json['container'] = container_json\n\n    container_json['name'] = '{0} on {1}'.format(\n                query,\n                datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')\n            )\n    container_json['description'] = \"Sumo Logic Message Artifacts\"\n    container_json['run_automation'] = False\n\n    messages = response['messages']\n    for message in messages:\n        artifact_json = {}\n        artifact_list.append(artifact_json)\n\n        info = message['map']\n\n        artifact_json['run_automation'] = False\n        artifact_json['source_data_identifier'] = info['_messagecount']\n        artifact_json['name'] = 'Message {0} from {1}'.format(\n                    info['_messagecount'],\n                    info['_sourcehost']\n                )\n        cef = {}\n\n        artifact_json['cef'] = cef\n        cef['log_source'] = info['_sourcename']\n        cef['message'] = info['_raw']\n        cef['fsize'] = info['_size']\n        ips = ip_regexc.findall(info['_raw'])\n        size = len(ips)\n        if size >= 1:\n            cef.update({'sourceIp': ips[0]})\n        if size >= 2:\n            cef.update({'destinationIp': ips[1]})\n\n    return [ret_json]\n</code></pre>",
+      "type": "ingestion",
+      "identifier": "on_poll",
+      "read_only": true,
+      "parameters": {
+        "start_time": {
+          "data_type": "numeric",
+          "description": "Parameter Ignored in this app"
+        },
+        "end_time": {
+          "data_type": "numeric",
+          "description": "Parameter Ignored in this app"
+        },
+        "container_id": {
+          "data_type": "string",
+          "description": "Parameter Ignored in this app"
+        },
+        "container_count": {
+          "data_type": "numeric",
+          "description": "Parameter ignored in this app"
+        },
+        "artifact_count": {
+          "data_type": "numeric",
+          "description": "Maximum number of messages to check",
+          "required": false,
+          "default": 100
+        }
+      },
       "output": [],
       "versions": "EQ(*)"
     },
@@ -72,129 +141,129 @@
           ]
         }
       },
-  "render": {
-    "width": 12,
-    "title": "Get Results",
-    "type": "table",
-    "height": 5
-  },
-  "output": [
-    {
-      "data_path": "action_result.data.*.fields.*.name",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.fields.*.keyField",
-      "data_type": "boolean"
-    },
-    {
-      "data_path": "action_result.data.*.fields.*.fieldType",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._raw",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._size",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._format",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._source",
-      "data_type": "string",
-      "column_order": 6,
-      "column_name": "Source"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._blockid",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._sourceid",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._collector",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._messageid",
-      "data_type": "string",
-      "column_order": 5,
-      "column_name": "Message ID"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._sourcehost",
-      "data_type": "string",
-      "contains": ["ip"]
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._sourcename",
-      "data_type": "string",
-      "column_order": 4,
-      "column_name": "Source Name"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._collectorid",
-      "data_type": "string",
-      "column_order": 3,
-      "column_name": "Collector ID"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._messagetime",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._receipttime",
-      "data_type": "string",
-      "column_order": 1,
-      "column_name": "Receipt Time"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._messagecount",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.data.*.messages.*.map._sourcecategory",
-      "data_type": "string",
-      "column_order": 0,
-      "column_name": "Source"
-    },
-    {
-      "data_path": "action_result.summary.search_id",
-      "data_type": "string",
-      "contains": ["search id"]
-    },
-    {
-      "data_path": "action_result.status",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.message",
-      "data_type": "string"
-    },
-    {
-      "data_path": "action_result.summary.total_objects",
-      "data_type": "numeric"
-    },
-    {
-      "data_path": "action_result.parameter.search_id",
-      "data_type": "string",
-      "contains": ["search id"]
-    },
-    {
-      "data_path": "summary.total_objects",
-      "data_type": "numeric"
-    },
-    {
-      "data_path": "summary.total_objects_successful",
-      "data_type": "numeric"
-    }
-  ],
+      "render": {
+        "width": 12,
+        "title": "Get Results",
+        "type": "table",
+        "height": 5
+      },
+      "output": [
+        {
+          "data_path": "action_result.data.*.fields.*.name",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.fields.*.keyField",
+          "data_type": "boolean"
+        },
+        {
+          "data_path": "action_result.data.*.fields.*.fieldType",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._raw",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._size",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._format",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._source",
+          "data_type": "string",
+          "column_order": 6,
+          "column_name": "Source"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._blockid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourceid",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._collector",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._messageid",
+          "data_type": "string",
+          "column_order": 5,
+          "column_name": "Message ID"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourcehost",
+          "data_type": "string",
+          "contains": ["ip"]
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourcename",
+          "data_type": "string",
+          "column_order": 4,
+          "column_name": "Source Name"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._collectorid",
+          "data_type": "string",
+          "column_order": 3,
+          "column_name": "Collector ID"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._messagetime",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._receipttime",
+          "data_type": "string",
+          "column_order": 1,
+          "column_name": "Receipt Time"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._messagecount",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.messages.*.map._sourcecategory",
+          "data_type": "string",
+          "column_order": 0,
+          "column_name": "Source"
+        },
+        {
+          "data_path": "action_result.summary.search_id",
+          "data_type": "string",
+          "contains": ["search id"]
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.summary.total_objects",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.parameter.search_id",
+          "data_type": "string",
+          "contains": ["search id"]
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric"
+        }
+      ],
       "versions": "EQ(*)"
     },
     {
@@ -246,10 +315,10 @@
         }
       },
       "render": {
-          "type": "json",
-          "width": 12,
-          "height": 5,
-          "title": "Search Results"
+        "type": "json",
+        "width": 12,
+        "height": 5,
+        "title": "Search Results"
       },
       "output": [
         {
@@ -390,7 +459,7 @@
       ],
       "versions": "EQ(*)"
     }
-    ]
-  }
+  ]
+}
 
 
