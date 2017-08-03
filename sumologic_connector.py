@@ -250,19 +250,11 @@ class SumoLogicConnector(BaseConnector):
         if limit > 10000:
             limit = 10000
 
-        from_time = self._state.get('last_query')
-        if not self.is_poll_now():
-            self._state['last_query'] = int(time.time() * 1000)  # ms since epoch
-
-        from_time = self._to_milliseconds(int(from_time))
+        from_time = self._state.get('last_query', self._to_milliseconds(self._five_days_ago()))
         to_time = self._now()
         to_time = self._to_milliseconds(int(to_time))
 
-        query = config('on_poll_query', '*')
-        try:
-            query = config['on_poll_query']
-        except KeyError:
-            return action_result.set_status(phantom.APP_ERROR, "Need to specify query for polling action")
+        query = config.get('on_poll_query', '*')
 
         self.save_progress("Creating a search job")
         try:
@@ -270,6 +262,9 @@ class SumoLogicConnector(BaseConnector):
         except Exception as e:
             return action_result.set_status(phantom.APP_ERROR, "Failed to start job search: {0}".format(str(e)))
         self.save_progress("Waiting for search results")
+
+        if not self.is_poll_now():
+            self._state['last_query'] = to_time + 1
 
         status = self._sumo.search_job_status(search_job)
 
@@ -323,6 +318,8 @@ class SumoLogicConnector(BaseConnector):
 
         for artifact in artifacts:
             artifact['container_id'] = container_id
+        if artifacts:
+            artifacts[-1]['run_automation'] = True
 
         if (hasattr(self, 'save_artifacts')):
             status, message, artifact_id = self.save_artifacts(artifacts)
@@ -330,7 +327,7 @@ class SumoLogicConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, message)
         else:
             for artifact in artifacts:
-                 status, message, artifact_id = self.save_artifact(artifact)
+                status, message, artifact_id = self.save_artifact(artifact)
             if phantom.is_fail(status):
                 return action_result.set_status(phantom.APP_ERROR, message)
 
