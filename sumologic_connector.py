@@ -250,7 +250,7 @@ class SumoLogicConnector(BaseConnector):
         if limit > 10000:
             limit = 10000
 
-        from_time = self._state.get('last_query', self._to_milliseconds(self._five_days_ago()))
+        from_time = self._state.get('last_query', self._to_milliseconds(self._first_run_time()))
         to_time = self._now()
         to_time = self._to_milliseconds(int(to_time))
 
@@ -262,9 +262,6 @@ class SumoLogicConnector(BaseConnector):
         except Exception as e:
             return action_result.set_status(phantom.APP_ERROR, "Failed to start job search: {0}".format(str(e)))
         self.save_progress("Waiting for search results")
-
-        if not self.is_poll_now():
-            self._state['last_query'] = to_time + 1
 
         status = self._sumo.search_job_status(search_job)
 
@@ -281,6 +278,9 @@ class SumoLogicConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, 'Error while getting results')
         else:  # Job Status is something other than DONE GATHERING RESULTS
             return action_result.get_status()
+
+        if not self.is_poll_now():
+            self._state['last_query'] = to_time + 1
 
         parser = config.get('message_parser')
         if parser:
@@ -335,6 +335,11 @@ class SumoLogicConnector(BaseConnector):
 
     def _five_days_ago(self):
         return int(time.mktime(time.localtime())) - SUMOLOGIC_FIVE_DAYS_IN_SECONDS
+
+    def _first_run_time(self):
+        config = self.get_config()
+        days = int(config.get('first_run_previous_days', 5))
+        return int(time.mktime(time.localtime()) - (days * 24 * 60 * 60))
 
     def _now(self):
         return int(time.mktime(time.localtime()))

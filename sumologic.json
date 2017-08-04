@@ -74,6 +74,13 @@
       "data_type": "file",
       "order": 7,
       "required": false
+    },
+    "first_run_previous_days": {
+      "description": "Start polling from this many days back",
+      "data_type": "numeric",
+      "order": 7,
+      "required": false,
+      "default": 5
     }
   },
   "actions": [
