@@ -250,19 +250,11 @@ class SumoLogicConnector(BaseConnector):
         if limit > 10000:
             limit = 10000
 
-        from_time = self._state.get('last_query')
-        if not self.is_poll_now():
-            self._state['last_query'] = int(time.time() * 1000)  # ms since epoch
-
-        from_time = self._to_milliseconds(int(from_time))
+        from_time = self._state.get('last_query', self._to_milliseconds(self._first_run_time()))
         to_time = self._now()
         to_time = self._to_milliseconds(int(to_time))
 
-        query = config('on_poll_query', '*')
-        try:
-            query = config['on_poll_query']
-        except KeyError:
-            return action_result.set_status(phantom.APP_ERROR, "Need to specify query for polling action")
+        query = config.get('on_poll_query', '*')
 
         self.save_progress("Creating a search job")
         try:
@@ -286,6 +278,9 @@ class SumoLogicConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, 'Error while getting results')
         else:  # Job Status is something other than DONE GATHERING RESULTS
             return action_result.get_status()
+
+        if not self.is_poll_now():
+            self._state['last_query'] = to_time + 1
 
         parser = config.get('message_parser')
         if parser:
@@ -323,6 +318,8 @@ class SumoLogicConnector(BaseConnector):
 
         for artifact in artifacts:
             artifact['container_id'] = container_id
+        if artifacts:
+            artifacts[-1]['run_automation'] = True
 
         if (hasattr(self, 'save_artifacts')):
             status, message, artifact_id = self.save_artifacts(artifacts)
@@ -330,7 +327,7 @@ class SumoLogicConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, message)
         else:
             for artifact in artifacts:
-                 status, message, artifact_id = self.save_artifact(artifact)
+                status, message, artifact_id = self.save_artifact(artifact)
             if phantom.is_fail(status):
                 return action_result.set_status(phantom.APP_ERROR, message)
 
@@ -338,6 +335,11 @@ class SumoLogicConnector(BaseConnector):
 
     def _five_days_ago(self):
         return int(time.mktime(time.localtime())) - SUMOLOGIC_FIVE_DAYS_IN_SECONDS
+
+    def _first_run_time(self):
+        config = self.get_config()
+        days = int(config.get('first_run_previous_days', 5))
+        return int(time.mktime(time.localtime()) - (days * 24 * 60 * 60))
 
     def _now(self):
         return int(time.mktime(time.localtime()))

@@ -32,9 +32,6 @@ SUMOLOGIC_OTHER_API_ENDPOINT = "https://api.{environment}.sumologic.com/api/v1"
 
 SUMOLOGIC_ERR_CONNECTION_FAILED = "Connection to the SumoLogic API has failed."
 
-ENTERPRISE_DEV_ACCESS_ID = "suq3SzO0cjCC2y"
-ENTERPRISE_DEV_ACCESS_KEY = "ajHRdOFwwrklX0WYKeNI5FSd5TGlpe1N1yG8p9LiN6FzpiaN3WYlTdRe1LSRfMdb"
-
 SUMOLOGIC_PROG_CREATING_SEARCH_JOB = "Creating search job..."
 SUMOLOGIC_PROG_POLLING_JOB = "Polling job for success..."
 SUMOLOGIC_POLLING_TIME_LIMIT = 60
