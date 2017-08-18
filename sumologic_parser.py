@@ -40,6 +40,9 @@ def message_parser(response, query):
     container_json['run_automation'] = False
 
     messages = response['messages']
+    # Don't create a new container if there are no results from the query
+    if len(messages) == 0:
+        return []
     for message in messages:
         artifact_json = {}
         artifact_list.append(artifact_json)
