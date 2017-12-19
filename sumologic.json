@@ -5,8 +5,8 @@
   "publisher": "Phantom",
   "type": "siem",
   "main_module": "sumologic_connector.pyc",
-    "app_version": "1.1.3",
-    "utctime_updated": "2017-08-18T17:23:39.000000Z",
+  "app_version": "1.1.4",
+  "utctime_updated": "2017-12-19T22:56:41.000000Z",
   "package_name": "phantom_sumologic",
   "product_name": "Sumo Logic",
   "product_vendor": "Sumo Logic",
@@ -21,14 +21,19 @@
         "input_file": "wheels/sumologic_sdk-0.1.7-py2-none-any.whl"
       }
     ]
-  },  
+  },
   "configuration": {
     "environment": {
       "description": "Environment Pod",
       "data_type": "string",
       "order": 0,
       "required": true,
-      "value_list": ["us1", "us2", "eu", "au"]
+      "value_list": [
+        "us1",
+        "us2",
+        "eu",
+        "au"
+      ]
     },
     "access_id": {
       "description": "Access ID",
@@ -67,7 +72,10 @@
       "order": 6,
       "required": false,
       "default": "messages",
-      "value_list": ["messages", "records"]
+      "value_list": [
+        "messages",
+        "records"
+      ]
     },
     "message_parser": {
       "description": "Python file containing a message parsing method",
@@ -206,7 +214,9 @@
         {
           "data_path": "action_result.data.*.messages.*.map._sourcehost",
           "data_type": "string",
-          "contains": ["ip"]
+          "contains": [
+            "ip"
+          ]
         },
         {
           "data_path": "action_result.data.*.messages.*.map._sourcename",
@@ -243,7 +253,9 @@
         {
           "data_path": "action_result.summary.search_id",
           "data_type": "string",
-          "contains": ["search id"]
+          "contains": [
+            "search id"
+          ]
         },
         {
           "data_path": "action_result.status",
@@ -260,7 +272,9 @@
         {
           "data_path": "action_result.parameter.search_id",
           "data_type": "string",
-          "contains": ["search id"]
+          "contains": [
+            "search id"
+          ]
         },
         {
           "data_path": "summary.total_objects",
@@ -287,7 +301,9 @@
           "order": 0,
           "required": true,
           "primary": true,
-          "contains": ["sumo logic query"]
+          "contains": [
+            "sumo logic query"
+          ]
         },
         "from_time": {
           "description": "UNIX start time for search",
@@ -317,7 +333,10 @@
           "order": 5,
           "required": false,
           "primary": false,
-          "value_list": ["messages", "records"],
+          "value_list": [
+            "messages",
+            "records"
+          ],
           "default": "messages"
         }
       },
@@ -385,7 +404,9 @@
           "data_type": "string",
           "column_order": 6,
           "column_name": "Source Host",
-          "contains": ["ip"]
+          "contains": [
+            "ip"
+          ]
         },
         {
           "data_path": "action_result.data.*.messages.*.map._sourcename",
@@ -420,7 +441,9 @@
         {
           "data_path": "action_result.summary.search_id",
           "data_type": "string",
-          "contains": ["search id"]
+          "contains": [
+            "search id"
+          ]
         },
         {
           "data_path": "action_result.status",
@@ -437,7 +460,9 @@
         {
           "data_path": "action_result.parameter.query",
           "data_type": "string",
-          "contains": ["sumo logic query"]
+          "contains": [
+            "sumo logic query"
+          ]
         },
         {
           "data_path": "action_result.parameter.from_time",
@@ -468,5 +493,3 @@
     }
   ]
 }
-
-
