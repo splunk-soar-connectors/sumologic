@@ -11,9 +11,9 @@
   "product_name": "Sumo Logic",
   "product_vendor": "Sumo Logic",
   "product_version_regex": ".*",
-  "min_phantom_version": "2.1.478",
+  "min_phantom_version": "3.0.251",
   "logo": "sumologic.png",
-  "license": "Copyright (c) Phantom Cyber Corporation 2016-2017",
+  "license": "Copyright (c) Phantom Cyber Corporation, 2016-2017",
   "pip_dependencies": {
     "wheel": [
       {
@@ -38,7 +38,7 @@
     },
     "access_key": {
       "description": "Access Key",
-      "data_type": "string",
+      "data_type": "password",
       "order": 2,
       "required": true
     },
