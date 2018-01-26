@@ -6,7 +6,7 @@
     "type": "siem",
     "main_module": "sumologic_connector.pyc",
     "app_version": "1.0.21",
-    "utctime_updated": "2018-01-25T03:06:25.000000Z",
+    "utctime_updated": "2018-01-26T00:50:08.000000Z",
     "package_name": "phantom_sumologic",
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
