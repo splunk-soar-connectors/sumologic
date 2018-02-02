@@ -5,14 +5,15 @@
     "publisher": "Phantom",
     "type": "siem",
     "main_module": "sumologic_connector.pyc",
-    "app_version": "1.1.5",
-    "utctime_updated": "2017-12-19T23:44:31.000000Z",
+    "app_version": "1.0.21",
+    "utctime_updated": "2018-01-26T00:50:08.000000Z",
     "package_name": "phantom_sumologic",
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
     "product_version_regex": ".*",
     "min_phantom_version": "3.0.251",
-    "logo": "sumologic.png",
+    "logo": "logo_sumologic.svg",
+    "logo_dark": "logo_sumologic_dark.svg",
     "license": "Copyright (c) Phantom Cyber Corporation, 2016-2018",
     "pip_dependencies": {
         "wheel": [
