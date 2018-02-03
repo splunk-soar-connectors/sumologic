@@ -5,7 +5,7 @@
     "publisher": "Phantom",
     "type": "siem",
     "main_module": "sumologic_connector.pyc",
-    "app_version": "1.0.22",
+    "app_version": "2.0.0",
     "utctime_updated": "2018-02-02T23:28:17.000000Z",
     "package_name": "phantom_sumologic",
     "product_name": "Sumo Logic",
