@@ -1,14 +1,10 @@
 <!--
 File: readme.html
 
-Copyright (c) Phantom Cyber Corporation, 2016-2018
+Copyright (c) 2014-2018 Splunk Inc.
 
-This unpublished material is proprietary to Phantom Cyber.
-All rights reserved. The methods and
-techniques described herein are considered trade secrets
-and/or confidential. Reproduction or distribution, in whole
-or in part, is forbidden except by express written permission
-of Phantom Cyber.
+SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+without a valid written license from Splunk Inc. is PROHIBITED.
 -->
 <p>When completing the asset configuration, there's a field called <b>environment</b>.  The easiest way to find the value for this field is to take a look at the URL you use to access the platform, which should be of the form:<br>
 https://service.<b>[environment]</b>.sumologic.com/ and extract it from there.</p><br>
@@ -16,6 +12,6 @@ https://service.<b>[environment]</b>.sumologic.com/ and extract it from there.</
 <h2 id="considerations">Considerations for Ingestion</h2>
 <p>
 When running sheduled polling, the start time is from when the previous one ended. There is also a limit of 10,000 messages which can be received per each poll.<br>
-With these two factors in mind, it is best to keep your <b>poll interval</b> small enough that you would expect to received less than the configured <b>Max Messages</b> in that interval, or else there will be messages which won't be ingested.<br>
+With these two factors in mind, it is best to keep your <b>poll interval</b> small enough that you would expect to receive less than the configured <b>Max Messages</b> in that interval, or else there will be messages which won't be ingested.<br>
 If there are still too many messages being received in a smaller time interval, consider creating multiple assets with more specific queries.<br>
 </p>

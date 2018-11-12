@@ -11,10 +11,10 @@
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
     "product_version_regex": ".*",
-    "min_phantom_version": "3.0.251",
+    "min_phantom_version": "3.5.210",
     "logo": "logo_sumologic.svg",
     "logo_dark": "logo_sumologic_dark.svg",
-    "license": "Copyright (c) Phantom Cyber Corporation, 2016-2018",
+    "license": "Copyright (c) 2016-2018 Splunk Inc.",
     "pip_dependencies": {
         "wheel": [
             {
@@ -108,7 +108,7 @@
             "action": "on poll",
             "description": "Run a query on Sumo Logic and ingest the results",
             "verbose": "This will run a search for logs that have occurred since the end of the scheduled poll. Since there is a limit of 10,000 messages, if there would be more than 10,000 results in the specified job search, the oldest ones will be discarded.<br>When running <b>POLL NOW</b>, it will run from the time of the last scheduled poll, but will not change which messages the next scheduled poll will recieve.</br></br>In order to use this action, a parser method should be provided as a Python file, since almost every log will be different. Provided below is a file which will be used as a fallback and can also serve as starting point. In order to properly work, the provided file needs a few things.<ul><li>There must be a function named <b>message_parser</b></li><li>It must accept two parameters<ul><li>A response, which will be returned by the endpoints to either get messages or records from a search job (more info <a href=\"https://help.sumologic.com/APIs/About-the-Search-Job-API\">here</a>)</li><li>The query string, which will be the same one from the asset config</li></ul></li><li>It must return a list of dictionaries. Each dictionary will have a container and a list of artifacts to add to that container. These should match the JSON objects that a POST to <b>/rest/container</b> and <b>/rest/artifact</b> expect</li></ul><br><a href=\"/app_resource/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/sumologic_parser.py\">Here is the (default) aforementioned parser file</a>.",
-            "type": "ingestion",
+            "type": "ingest",
             "identifier": "on_poll",
             "read_only": true,
             "parameters": {
@@ -291,7 +291,7 @@
         {
             "action": "run query",
             "description": "Runs a search query on the Sumo Logic platform",
-            "verbose": "<p>Run Query takes advantage of the Search Job API.</p><p><b>PLEASE NOTE:</b>  If you do not have an Enterprise license with Sumo Logic, the Search Job API is not available to you.  This action will only work if the accessId and the accessKey are associated with an Enterprise-level account.</p><p><b>Run Query</b> takes five different parameters.  Some notes:</p><ul><li><b>query</b> - text does not have to be escaped.</li><li><b>from_time</b> - Must be UNIX timestamp.  Default value is five days ago.</li><li><b>to_time</b> - Must be UNIX timestamp.  Default value is the current time.</li><li><b>limit</b> - Limiting the messages can be ideal if the query returns a large amount.  The default limit is 100.</li><li><b>type</b> - Either <i>messages</i> or an aggregate <i>record</i>.  Record will be significantly smaller.  If none is specified, it will default to <i>messages</i>.</li></ul><p>The Search Job API is asynchronous and requires polling.  The <b>run query</b> action will poll for up to 60 seconds.</p><ul><li>If the query finishes before the time limit, the action will succeed and the data will be added to the action result.</li><li>If the query does not finish before the time limit, the action will still succeed - but the search job ID (action_result.summary.search_id) will be added to the summary.  This Search Job ID can then be used in <b>get results</b></li></ul>",
+            "verbose": "<p>Run Query takes advantage of the Search Job API.</p><p><b>PLEASE NOTE:</b>  If you do not have an Enterprise license with Sumo Logic, the Search Job API is not available to you.  This action will only work if the accessId and the accessKey are associated with an Enterprise-level account.</p><p><b>Run Query</b> takes five different parameters.  Some notes:</p><ul><li><b>query</b> - text does not have to be escaped.</li><li><b>from_time</b> - Must be UNIX timestamp.  Default value is five days ago.</li><li><b>to_time</b> - Must be UNIX timestamp.  Default value is the current time.</li><li><b>limit</b> - Limiting the messages can be ideal if the query returns a large amount.  The default limit is 100.</li><li><b>type</b> - Either <i>messages</i> or an aggregate <i>record</i>.  Record will be significantly smaller.  If none is specified, it will default to <i>messages</i>.</li></ul><p>The Search Job API is asynchronous and requires polling.  The <b>run query</b> action will poll for up to 60 seconds.</p><ul><li>If the query finishes before the time limit, the action will succeed and the data will be added to the action result.</li><li>If the query does not finish before the time limit, the action will still succeed - but the search job ID (action_result.summary.search_id) will be added to the summary.  This Search Job ID can then be used in <b>get results</b>.</li></ul>",
             "type": "investigate",
             "identifier": "run_query",
             "read_only": true,
