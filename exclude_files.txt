@@ -1,4 +1,7 @@
-__init__.py
+docker-compose.yml
 sumologic_connector.py
-sumologic_consts.py
+Makefile
+__init__.py
 .git*
+.gitlab-ci.yml
+sumologic_consts.py
