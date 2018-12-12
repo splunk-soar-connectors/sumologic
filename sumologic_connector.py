@@ -54,7 +54,7 @@ class SumoLogicConnector(BaseConnector):
         if (self._sumo is not None):
             return phantom.APP_SUCCESS
 
-        # Get the confirguration for the environment
+        # Get the configuration for the environment
         config = self.get_config()
 
         # Retrieve the needed parameters for the SumoLogic object
@@ -403,10 +403,7 @@ if __name__ == '__main__':
         password = getpass.getpass("Password: ")
 
     if (username and password):
-        if hasattr(BaseConnector, 'get_phantom_home'):
-            login_url = BaseConnector._get_phantom_base_url() + "login"
-        else:
-            login_url = 'https://127.0.0.1/login'
+        login_url = BaseConnector._get_phantom_base_url() + "login"
         try:
             print ("Accessing the Login page")
             r = requests.get(login_url, verify=False)

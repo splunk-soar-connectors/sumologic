@@ -11,7 +11,7 @@
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
     "product_version_regex": ".*",
-    "min_phantom_version": "3.5.210",
+    "min_phantom_version": "4.0.1068",
     "logo": "logo_sumologic.svg",
     "logo_dark": "logo_sumologic_dark.svg",
     "license": "Copyright (c) 2016-2018 Splunk Inc.",
