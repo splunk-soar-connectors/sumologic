@@ -1,7 +1,7 @@
 # --
 # File: sumologic_connector.py
 #
-# Copyright (c) 2014-2018 Splunk Inc.
+# Copyright (c) 2016-2018 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -54,7 +54,7 @@ class SumoLogicConnector(BaseConnector):
         if (self._sumo is not None):
             return phantom.APP_SUCCESS
 
-        # Get the confirguration for the environment
+        # Get the configuration for the environment
         config = self.get_config()
 
         # Retrieve the needed parameters for the SumoLogic object
@@ -71,7 +71,10 @@ class SumoLogicConnector(BaseConnector):
 
         # Try to make the sumologic object
         try:
-            self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile='/opt/phantom/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
+            if hasattr(self, 'get_phantom_home'):
+                self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile=self.get_phantom_home() + '/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
+            else:
+                self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile='/opt/phantom/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
         except Exception as e:
             return self.set_status(phantom.APP_ERROR, SUMOLOGIC_ERR_CONNECTION_FAILED, e)
 
@@ -400,9 +403,10 @@ if __name__ == '__main__':
         password = getpass.getpass("Password: ")
 
     if (username and password):
+        login_url = BaseConnector._get_phantom_base_url() + "login"
         try:
             print ("Accessing the Login page")
-            r = requests.get("https://127.0.0.1/login", verify=False)
+            r = requests.get(login_url, verify=False)
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -412,10 +416,10 @@ if __name__ == '__main__':
 
             headers = dict()
             headers['Cookie'] = 'csrftoken=' + csrftoken
-            headers['Referer'] = 'https://127.0.0.1/login'
+            headers['Referer'] = login_url
 
             print ("Logging into Platform to get the session id")
-            r2 = requests.post("https://127.0.0.1/login", verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print ("Unable to get session id from the platfrom. Error: " + str(e))
