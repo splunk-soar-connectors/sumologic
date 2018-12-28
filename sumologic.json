@@ -154,6 +154,9 @@
                     "primary": true,
                     "contains": [
                         "search id"
+                    ],
+                    "example_values": [
+                        "177C7C195542A613"
                     ]
                 }
             },
@@ -165,7 +168,21 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.fields.*.name",
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.search_id",
+                    "data_type": "string",
+                    "contains": [
+                        "search id"
+                    ],
+                    "example_values": [
+                        "177C7C195542A613"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.fields.*.fieldType",
                     "data_type": "string"
                 },
                 {
@@ -173,37 +190,29 @@
                     "data_type": "boolean"
                 },
                 {
-                    "data_path": "action_result.data.*.fields.*.fieldType",
+                    "data_path": "action_result.data.*.fields.*.name",
                     "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._raw",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._size",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._format",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._source",
-                    "data_type": "string",
-                    "column_order": 6,
-                    "column_name": "Source"
                 },
                 {
                     "data_path": "action_result.data.*.messages.*.map._blockid",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._sourceid",
+                    "data_path": "action_result.data.*.messages.*.map._collector",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._collector",
+                    "data_path": "action_result.data.*.messages.*.map._collectorid",
+                    "data_type": "string",
+                    "column_order": 3,
+                    "column_name": "Collector ID"
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._format",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._messagecount",
                     "data_type": "string"
                 },
                 {
@@ -213,26 +222,11 @@
                     "column_name": "Message ID"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._sourcehost",
-                    "data_type": "string",
-                    "contains": [
-                        "ip"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._sourcename",
-                    "data_type": "string",
-                    "column_order": 4,
-                    "column_name": "Source Name"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._collectorid",
-                    "data_type": "string",
-                    "column_order": 3,
-                    "column_name": "Collector ID"
-                },
-                {
                     "data_path": "action_result.data.*.messages.*.map._messagetime",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._raw",
                     "data_type": "string"
                 },
                 {
@@ -242,8 +236,14 @@
                     "column_name": "Receipt Time"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._messagecount",
+                    "data_path": "action_result.data.*.messages.*.map._size",
                     "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._source",
+                    "data_type": "string",
+                    "column_order": 6,
+                    "column_name": "Source"
                 },
                 {
                     "data_path": "action_result.data.*.messages.*.map._sourcecategory",
@@ -252,30 +252,42 @@
                     "column_name": "Source"
                 },
                 {
+                    "data_path": "action_result.data.*.messages.*.map._sourcehost",
+                    "data_type": "string",
+                    "contains": [
+                        "ip"
+                    ],
+                    "example_values": [
+                        "1.1.1.1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._sourceid",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._sourcename",
+                    "data_type": "string",
+                    "column_order": 4,
+                    "column_name": "Source Name"
+                },
+                {
                     "data_path": "action_result.summary.search_id",
                     "data_type": "string",
                     "contains": [
                         "search id"
+                    ],
+                    "example_values": [
+                        "177C7C195542A613"
                     ]
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary.total_objects",
                     "data_type": "numeric"
                 },
                 {
-                    "data_path": "action_result.parameter.search_id",
-                    "data_type": "string",
-                    "contains": [
-                        "search id"
-                    ]
+                    "data_path": "action_result.message",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "summary.total_objects",
@@ -349,45 +361,74 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.fields.*.name",
-                    "data_type": "string"
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
                 },
                 {
-                    "data_path": "action_result.data.*.fields.*.keyField",
-                    "data_type": "boolean"
+                    "data_path": "action_result.parameter.from_time",
+                    "data_type": "string",
+                    "example_values": [
+                        1545301292
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.limit",
+                    "data_type": "numeric",
+                    "example_values": [
+                        100
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.query",
+                    "data_type": "string",
+                    "contains": [
+                        "sumo logic query"
+                    ],
+                    "example_values": [
+                        "_sourceCategory=\"uploads/linux/system\""
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.to_time",
+                    "data_type": "string",
+                    "example_values": [
+                        1545819692
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "messages"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.fields.*.fieldType",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._raw",
                     "data_type": "string",
-                    "column_order": 1,
-                    "column_name": "Raw"
+                    "example_values": [
+                        "long"
+                    ]
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._size",
+                    "data_path": "action_result.data.*.fields.*.keyField",
+                    "data_type": "boolean",
+                    "example_values": [
+                        false,
+                        true
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.fields.*.name",
                     "data_type": "string",
-                    "column_order": 3,
-                    "column_name": "Size"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._format",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._source",
-                    "data_type": "string",
-                    "column_order": 4,
-                    "column_name": "Source"
+                    "example_values": [
+                        "_blockid"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.messages.*.map._blockid",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.messages.*.map._sourceid",
                     "data_type": "string"
                 },
                 {
@@ -397,26 +438,19 @@
                     "column_name": "Collector"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._messageid",
+                    "data_path": "action_result.data.*.messages.*.map._collectorid",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._sourcehost",
-                    "data_type": "string",
-                    "column_order": 6,
-                    "column_name": "Source Host",
-                    "contains": [
-                        "ip"
-                    ]
+                    "data_path": "action_result.data.*.messages.*.map._format",
+                    "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._sourcename",
-                    "data_type": "string",
-                    "column_order": 7,
-                    "column_name": "Source Name"
+                    "data_path": "action_result.data.*.messages.*.map._messagecount",
+                    "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._collectorid",
+                    "data_path": "action_result.data.*.messages.*.map._messageid",
                     "data_type": "string"
                 },
                 {
@@ -426,12 +460,26 @@
                     "column_name": "Message Time (MS)"
                 },
                 {
+                    "data_path": "action_result.data.*.messages.*.map._raw",
+                    "data_type": "string",
+                    "column_order": 1,
+                    "column_name": "Raw"
+                },
+                {
                     "data_path": "action_result.data.*.messages.*.map._receipttime",
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.messages.*.map._messagecount",
-                    "data_type": "string"
+                    "data_path": "action_result.data.*.messages.*.map._size",
+                    "data_type": "string",
+                    "column_order": 3,
+                    "column_name": "Size"
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._source",
+                    "data_type": "string",
+                    "column_order": 4,
+                    "column_name": "Source"
                 },
                 {
                     "data_path": "action_result.data.*.messages.*.map._sourcecategory",
@@ -440,54 +488,64 @@
                     "column_name": "Source Category"
                 },
                 {
+                    "data_path": "action_result.data.*.messages.*.map._sourcehost",
+                    "data_type": "string",
+                    "column_order": 6,
+                    "column_name": "Source Host",
+                    "contains": [
+                        "ip"
+                    ],
+                    "example_values": [
+                        "1.1.1.1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._sourceid",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.messages.*.map._sourcename",
+                    "data_type": "string",
+                    "column_order": 7,
+                    "column_name": "Source Name"
+                },
+                {
                     "data_path": "action_result.summary.search_id",
                     "data_type": "string",
                     "contains": [
                         "search id"
+                    ],
+                    "example_values": [
+                        "177C7C195542A613"
                     ]
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary.total_objects",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "action_result.parameter.query",
-                    "data_type": "string",
-                    "contains": [
-                        "sumo logic query"
+                    "data_type": "numeric",
+                    "example_values": [
+                        0
                     ]
                 },
                 {
-                    "data_path": "action_result.parameter.from_time",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.parameter.to_time",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.parameter.limit",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "action_result.parameter.type",
-                    "data_type": "string"
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Total objects: 0, Search id: 177C7C195542A613"
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 }
             ],
             "versions": "EQ(*)"
