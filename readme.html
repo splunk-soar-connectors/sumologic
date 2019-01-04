@@ -11,7 +11,7 @@ https://service.<b>[environment]</b>.sumologic.com/ and extract it from there.</
 
 <h2 id="considerations">Considerations for Ingestion</h2>
 <p>
-When running sheduled polling, the start time is from when the previous one ended. There is also a limit of 10,000 messages which can be received per each poll.<br>
+When running scheduled polling, the start time is from when the previous one ended. There is also a limit of 10,000 messages which can be received per each poll.<br>
 With these two factors in mind, it is best to keep your <b>poll interval</b> small enough that you would expect to receive less than the configured <b>Max Messages</b> in that interval, or else there will be messages which won't be ingested.<br>
 If there are still too many messages being received in a smaller time interval, consider creating multiple assets with more specific queries.<br>
 </p>
