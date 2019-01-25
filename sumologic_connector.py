@@ -1,14 +1,8 @@
-# --
 # File: sumologic_connector.py
+# Copyright (c) 2016-2019 Splunk Inc.
 #
-# Copyright (c) Phantom Cyber Corporation, 2016-2018
-#
-# This unpublished material is proprietary to Phantom Cyber.
-# All rights reserved. The methods and
-# techniques described herein are considered trade secrets
-# and/or confidential. Reproduction or distribution, in whole
-# or in part, is forbidden except by express written permission
-# of Phantom Cyber.
+# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+# without a valid written license from Splunk Inc. is PROHIBITED.
 #
 # --
 
@@ -22,6 +16,8 @@ from phantom.base_connector import BaseConnector
 import sumologic_parser
 import sumologic
 from sumologic_consts import *
+import requests
+import json
 
 import imp
 
@@ -56,7 +52,7 @@ class SumoLogicConnector(BaseConnector):
         if (self._sumo is not None):
             return phantom.APP_SUCCESS
 
-        # Get the confirguration for the environment
+        # Get the configuration for the environment
         config = self.get_config()
 
         # Retrieve the needed parameters for the SumoLogic object
@@ -73,7 +69,10 @@ class SumoLogicConnector(BaseConnector):
 
         # Try to make the sumologic object
         try:
-            self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile='/opt/phantom/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
+            if hasattr(self, 'get_phantom_home'):
+                self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile=self.get_phantom_home() + '/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
+            else:
+                self._sumo = sumologic.SumoLogic(access_id, access_key, endpoint=api_endpoint, cookieFile='/opt/phantom/apps/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/cookies.txt')  # noqa
         except Exception as e:
             return self.set_status(phantom.APP_ERROR, SUMOLOGIC_ERR_CONNECTION_FAILED, e)
 
@@ -127,10 +126,12 @@ class SumoLogicConnector(BaseConnector):
 
         try:
             self._sumo.collectors(limit=1)
-        except:
-            return self.set_status(phantom.APP_ERROR)
+        except Exception as e:
+            self.save_progress("Test Connectivity Failed")
+            return self.set_status(phantom.APP_ERROR, str(e))
 
         self.save_progress("Connection to Sumo Logic with the specified environment has succeeded.")
+        self.save_progress("Test Connectivity Passed")
 
         return self.set_status(phantom.APP_SUCCESS)
 
@@ -279,6 +280,8 @@ class SumoLogicConnector(BaseConnector):
         else:  # Job Status is something other than DONE GATHERING RESULTS
             return action_result.get_status()
 
+        self.save_progress("Processing response")
+
         if not self.is_poll_now():
             self._state['last_query'] = to_time + 1
 
@@ -294,9 +297,12 @@ class SumoLogicConnector(BaseConnector):
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Unable to execute message parser: {0}".format(str(e)))
         else:  # No parser method provided, use default one instead
-            if job_type == 'records':
-                return action_result.set_status(phantom.APP_ERROR, "Cannot get records with default parser")
             ret_dict_list = sumologic_parser.message_parser(response, query)
+
+        max_container = param.get('container_count')
+
+        if (max_container > 0):
+            ret_dict_list = ret_dict_list[:max_container]
 
         for container_dict in ret_dict_list:
             resp = self._save_container(container_dict, action_result)
@@ -339,6 +345,9 @@ class SumoLogicConnector(BaseConnector):
     def _first_run_time(self):
         config = self.get_config()
         days = int(config.get('first_run_previous_days', 5))
+        if (days < 1):
+            self.save_progress("Going 1 day in the past")
+            days = 1
         return int(time.mktime(time.localtime()) - (days * 24 * 60 * 60))
 
     def _now(self):
@@ -367,24 +376,66 @@ class SumoLogicConnector(BaseConnector):
 
 
 if __name__ == '__main__':
-    """ This section is executed when run in standalone debug mode """
 
-    import sys
     import pudb
-    import json
+    import argparse
 
     pudb.set_trace()
 
-    with open(sys.argv[1]) as f:
+    argparser = argparse.ArgumentParser()
+
+    argparser.add_argument('input_test_json', help='Input Test JSON file')
+    argparser.add_argument('-u', '--username', help='username', required=False)
+    argparser.add_argument('-p', '--password', help='password', required=False)
+
+    args = argparser.parse_args()
+    session_id = None
+
+    username = args.username
+    password = args.password
+
+    if (username is not None and password is None):
+
+        # User specified a username but not a password, so ask
+        import getpass
+        password = getpass.getpass("Password: ")
+
+    if (username and password):
+        login_url = BaseConnector._get_phantom_base_url() + "login"
+        try:
+            print ("Accessing the Login page")
+            r = requests.get(login_url, verify=False)
+            csrftoken = r.cookies['csrftoken']
+
+            data = dict()
+            data['username'] = username
+            data['password'] = password
+            data['csrfmiddlewaretoken'] = csrftoken
+
+            headers = dict()
+            headers['Cookie'] = 'csrftoken=' + csrftoken
+            headers['Referer'] = login_url
+
+            print ("Logging into Platform to get the session id")
+            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            session_id = r2.cookies['sessionid']
+        except Exception as e:
+            print ("Unable to get session id from the platfrom. Error: " + str(e))
+            exit(1)
+
+    with open(args.input_test_json) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
+        print(json.dumps(in_json, indent=4))
 
         connector = SumoLogicConnector()
-
         connector.print_progress_message = True
 
-        ret_val = connector._handle_action(json.dumps(in_json), None)
+        if (session_id is not None):
+            in_json['user_session_token'] = session_id
+            connector._set_csrf_info(csrftoken, headers['Referer'])
 
-        print ret_val
+        ret_val = connector._handle_action(json.dumps(in_json), None)
+        print (json.dumps(json.loads(ret_val), indent=4))
 
     exit(0)
