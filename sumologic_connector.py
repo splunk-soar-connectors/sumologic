@@ -79,6 +79,28 @@ class SumoLogicConnector(BaseConnector):
         # Return success so that the other actions can be continued after they call connect
         return phantom.APP_SUCCESS
 
+    def _delete_job(self, param):
+
+        if (phantom.is_fail(self._connect())):
+            return self.get_status()
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        try:
+
+            self.save_progress("deleting search job: {}".format(param[SUMOLOGIC_JSON_JOB_ID]))
+            status = self._sumo.delete("/search/jobs/{}".format(param[SUMOLOGIC_JSON_JOB_ID]))
+
+        except Exception as e:
+
+            return action_result.set_status(phantom.APP_ERROR,
+                                            "Could not find the specified job.  It may have been deleted by Sumo Logic.",
+                                            e)
+
+        self.save_progress("deleted search job: {}".format(param[SUMOLOGIC_JSON_JOB_ID]))
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+
     def _get_results(self, param):
 
         if (phantom.is_fail(self._connect())):
@@ -104,7 +126,7 @@ class SumoLogicConnector(BaseConnector):
         if status['state'] == 'DONE GATHERING RESULTS':
 
             try:
-                response = self._sumo.search_job_messages(search_job)
+                response = self._sumo.search_job_messages(search_job, 10000)
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "The specified job could not be retreived.", e)
 
@@ -259,7 +281,15 @@ class SumoLogicConnector(BaseConnector):
 
         self.save_progress("Creating a search job")
         try:
-            search_job = self._sumo.search_job(query, int(from_time), int(to_time))
+            if config.get('search_by_receipt_time', False):
+                # sumo.search_job doesn't have a byReceiptTime parameter. Just replicate search_job function here.
+                params = {'query': query, 'from': int(from_time), 'to': int(to_time), 'timeZone': "UTC", 'byReceiptTime': True}
+                r = self._sumo.post('/search/jobs', params)
+                search_job = json.loads(r.text)
+            else:
+                search_job = self._sumo.search_job(query, int(from_time), int(to_time))
+
+            self.save_progress("Created search job ({})".format(search_job['id']))
         except Exception as e:
             return action_result.set_status(phantom.APP_ERROR, "Failed to start job search: {0}".format(str(e)))
         self.save_progress("Waiting for search results")
@@ -275,9 +305,27 @@ class SumoLogicConnector(BaseConnector):
                     response = self._sumo.search_job_records(search_job, limit=limit)
                 else:
                     return action_result.set_status(phantom.APP_ERROR, "Invalid job type: {0}".format(job_type))
+
+                try:
+                    if config.get('delete_job_when_finished', False):
+                        self.save_progress("Success with search job ({}). Deleting".format(search_job['id']))
+                        self._sumo.delete("/search/jobs/{}".format(search_job['id']))
+                except Exception as e:
+                    self.save_progress("Error deleting search job. Continuing: " + str(e))
+
             except Exception as e:
+
+                try:
+                    if config.get('delete_job_when_finished', False):
+                        self.save_progress("Error with search job ({}). Deleting".format(search_job['id']))
+                        self._sumo.delete("/search/jobs/{}".format(search_job['id']))
+                except Exception as e:
+                    self.save_progress("Error deleting search job: " + str(e))
+
                 return action_result.set_status(phantom.APP_ERROR, 'Error while getting results')
+
         else:  # Job Status is something other than DONE GATHERING RESULTS
+            self.save_progress("Search job ({}) not completed, returning: {}".format(search_job['id'], status['state']))
             return action_result.get_status()
 
         self.save_progress("Processing response")
@@ -371,6 +419,8 @@ class SumoLogicConnector(BaseConnector):
             result = self._get_results(param)
         elif (action == self.ACTION_ID_ON_POLL):
             return self._on_poll(param)
+        elif (action == "delete job"):
+            return self._handle_delete_job(param)
 
         return result
 
