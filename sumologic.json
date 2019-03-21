@@ -53,24 +53,31 @@
             "data_type": "timezone",
             "order": 3,
             "required": true
+	},
+        "delete_job_when_finished": {
+            "description": "Delete search job when finished",
+            "data_type": "boolean",
+            "order": 4,
+            "default": false,
+            "required": false
         },
         "max_messages": {
             "description": "Max messages to poll for",
             "data_type": "numeric",
-            "order": 4,
+            "order": 5,
             "required": false
         },
         "on_poll_query": {
             "description": "Query to use during polling",
             "data_type": "string",
-            "order": 5,
+            "order": 6,
             "default": "*",
             "required": false
         },
         "type": {
             "description": "Poll for messages or records",
             "data_type": "string",
-            "order": 6,
+            "order": 7,
             "required": false,
             "default": "messages",
             "value_list": [
@@ -81,15 +88,22 @@
         "message_parser": {
             "description": "Python file containing a message parsing method",
             "data_type": "file",
-            "order": 7,
+            "order": 8,
             "required": false
         },
         "first_run_previous_days": {
             "description": "Start polling from this many days back (minimum 1 day)",
             "data_type": "numeric",
-            "order": 7,
+            "order": 9,
             "required": false,
             "default": 5
+        },
+        "search_by_receipt_time": {
+            "description": "set byReceiptTime flag when creating search job",
+            "data_type": "boolean",
+            "order": 10,
+            "default": false,
+            "required": false
         }
     },
     "actions": [
@@ -546,6 +560,73 @@
                     "example_values": [
                         1
                     ]
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete job",
+            "description": "delete a search job",
+            "verbose": "<p>This action takes a Search Job ID as its primary parameter.</p><p>This action deletes any existing Search Job. The Sumo Logic platform deletes the Search Job after an unknown amount of time, resulting in the action failing even though the search job ID may be correct.</p>",
+            "type": "generic",
+            "identifier": "delete_job",
+            "read_only": false,
+            "parameters": {
+                "search_id": {
+                    "description": "Search id",
+                    "data_type": "string",
+                    "order": 0,
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "search id"
+                    ]
+                }
+            },
+            "render": {
+                "width": 12,
+                "title": "Delete Job",
+                "type": "table",
+                "height": 5
+            },
+            "output": [
+                {
+                    "data_path": "action_result.summary.search_id",
+                    "data_type": "string",
+                    "contains": [
+                        "search id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.search_id",
+                    "data_type": "string",
+                    "contains": [
+                        "search id"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.data.*.search_id",
+                    "data_type": "string"
                 }
             ],
             "versions": "EQ(*)"
