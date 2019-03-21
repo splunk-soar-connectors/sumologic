@@ -5,8 +5,8 @@
     "publisher": "Splunk",
     "type": "siem",
     "main_module": "sumologic_connector.pyc",
-    "app_version": "2.0.12",
-    "utctime_updated": "2019-03-19T23:00:06.000000Z",
+    "app_version": "2.0.13",
+    "utctime_updated": "2019-03-21T16:56:50.000000Z",
     "package_name": "phantom_sumologic",
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
@@ -53,7 +53,7 @@
             "data_type": "timezone",
             "order": 3,
             "required": true
-	},
+        },
         "delete_job_when_finished": {
             "description": "Delete search job when finished",
             "data_type": "boolean",
