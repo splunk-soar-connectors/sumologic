@@ -11,7 +11,7 @@
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.0.1068",
+    "min_phantom_version": "4.2.7532",
     "logo": "logo_sumologic.svg",
     "logo_dark": "logo_sumologic_dark.svg",
     "license": "Copyright (c) 2016-2019 Splunk Inc.",
@@ -109,7 +109,7 @@
     "actions": [
         {
             "action": "test connectivity",
-            "description": "validate the asset configuration for connectivity",
+            "description": "Validate the asset configuration for connectivity",
             "verbose": "This action uses the unique access ID and access key to send a request to the Sumo Logic API to retrieve a single collector.",
             "type": "test",
             "identifier": "test_asset_connectivity",
@@ -183,7 +183,11 @@
             "output": [
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.search_id",
@@ -201,7 +205,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.fields.*.keyField",
-                    "data_type": "boolean"
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.fields.*.name",
@@ -218,7 +226,7 @@
                 {
                     "data_path": "action_result.data.*.messages.*.map._collectorid",
                     "data_type": "string",
-                    "column_order": 3,
+                    "column_order": 2,
                     "column_name": "Collector ID"
                 },
                 {
@@ -232,7 +240,7 @@
                 {
                     "data_path": "action_result.data.*.messages.*.map._messageid",
                     "data_type": "string",
-                    "column_order": 5,
+                    "column_order": 4,
                     "column_name": "Message ID"
                 },
                 {
@@ -256,7 +264,7 @@
                 {
                     "data_path": "action_result.data.*.messages.*.map._source",
                     "data_type": "string",
-                    "column_order": 6,
+                    "column_order": 5,
                     "column_name": "Source"
                 },
                 {
@@ -282,7 +290,7 @@
                 {
                     "data_path": "action_result.data.*.messages.*.map._sourcename",
                     "data_type": "string",
-                    "column_order": 4,
+                    "column_order": 3,
                     "column_name": "Source Name"
                 },
                 {
@@ -297,7 +305,10 @@
                 },
                 {
                     "data_path": "action_result.summary.total_objects",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -305,11 +316,17 @@
                 },
                 {
                     "data_path": "summary.total_objects",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 }
             ],
             "versions": "EQ(*)"
@@ -335,31 +352,27 @@
                 "from_time": {
                     "description": "UNIX start time for search",
                     "data_type": "numeric",
-                    "order": 2,
-                    "required": false,
-                    "primary": false
+                    "order": 1,
+                    "required": false
                 },
                 "to_time": {
                     "description": "UNIX end time for search",
                     "data_type": "numeric",
-                    "order": 3,
-                    "required": false,
-                    "primary": false
+                    "order": 2,
+                    "required": false
                 },
                 "limit": {
                     "description": "Upper limit of message response results",
                     "data_type": "numeric",
-                    "order": 4,
+                    "order": 3,
                     "required": false,
-                    "primary": false,
                     "default": 100
                 },
                 "type": {
                     "description": "Type of response to receive",
                     "data_type": "string",
-                    "order": 5,
+                    "order": 4,
                     "required": false,
-                    "primary": false,
                     "value_list": [
                         "messages",
                         "records"
@@ -378,7 +391,8 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ]
                 },
                 {
@@ -595,11 +609,19 @@
                     "data_type": "string",
                     "contains": [
                         "search id"
-                    ]
+                    ],
+                    "column_order": 0,
+                    "column_name": "Search ID"
                 },
                 {
                     "data_path": "action_result.status",
-                    "data_type": "string"
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ],
+                    "column_order": 1,
+                    "column_name": "Status"
                 },
                 {
                     "data_path": "action_result.message",
@@ -618,11 +640,17 @@
                 },
                 {
                     "data_path": "summary.total_objects",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.search_id",
