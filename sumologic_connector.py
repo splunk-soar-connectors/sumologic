@@ -28,6 +28,7 @@ class SumoLogicConnector(BaseConnector):
     ACTION_ID_TEST_ASSET_CONNECTIVITY = 'test_asset_connectivity'
     ACTION_ID_GET_RESULTS = 'get_results'
     ACTION_ID_ON_POLL = 'on_poll'
+    ACTION_ID_DELETE_JOB = 'delete_job'
 
     def __init__(self):
 
@@ -57,7 +58,7 @@ class SumoLogicConnector(BaseConnector):
 
         # Retrieve the needed parameters for the SumoLogic object
         environment = config[SUMOLOGIC_JSON_ENVIRONMENT]
-        access_id = config[SUMOLOGIC_JSON_ACCESS_ID]
+        access_id = config[SUMOLOGIC_JSON_ACCESS_ID].encode('utf-8')
         access_key = config[SUMOLOGIC_JSON_ACCESS_KEY]
         # collector_endpoint = SUMOLOGIC_COLLECTOR_ENDPOINT
 
@@ -90,6 +91,7 @@ class SumoLogicConnector(BaseConnector):
 
             self.save_progress("deleting search job: {}".format(param[SUMOLOGIC_JSON_JOB_ID]))
             status = self._sumo.delete("/search/jobs/{}".format(param[SUMOLOGIC_JSON_JOB_ID]))
+            self.debug_print("Status: {}".format(status))
 
         except Exception as e:
 
@@ -99,7 +101,6 @@ class SumoLogicConnector(BaseConnector):
 
         self.save_progress("deleted search job: {}".format(param[SUMOLOGIC_JSON_JOB_ID]))
         return action_result.set_status(phantom.APP_SUCCESS)
-
 
     def _get_results(self, param):
 
@@ -201,7 +202,7 @@ class SumoLogicConnector(BaseConnector):
         to_time = param.get(SUMOLOGIC_JSON_TO_TIME, self._now())
 
         # Convert to milliseconds if not already
-        if from_time == "0" or to_time == "0":
+        if from_time == 0 or to_time == 0:
             return action_result.set_status(phantom.APP_ERROR, "Time range cannot start or end with zero")
 
         from_time = self._to_milliseconds(int(from_time))
@@ -242,8 +243,8 @@ class SumoLogicConnector(BaseConnector):
                     action_result.set_summary(
                         {"total_objects": len(response["records"]), "search_id": search_job['id']})
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "The specified job could not be retrieved.  "
-                                                                   "If the response type was 'records', make sure that the query supplied is an aggregation query.")
+                message = "The specified job could not be retrieved. If the response type was 'records', make sure that the query supplied is an aggregation query."
+                return action_result.set_status(phantom.APP_ERROR, message)
 
             action_result.add_data(response)
 
@@ -325,8 +326,11 @@ class SumoLogicConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, 'Error while getting results')
 
         else:  # Job Status is something other than DONE GATHERING RESULTS
-            self.save_progress("Search job ({}) not completed, returning: {}".format(search_job['id'], status['state']))
-            return action_result.get_status()
+            try:
+                self.save_progress("Search job ({}) not completed, returning: {}".format(search_job['id'], status['state']))
+                return action_result.get_status()
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error occurred while fetching the search job details. Error: {}".format(str(e)))
 
         self.save_progress("Processing response")
 
@@ -409,6 +413,7 @@ class SumoLogicConnector(BaseConnector):
 
     def handle_action(self, param):
 
+        result = None
         action = self.get_action_identifier()
 
         if (action == self.ACTION_ID_RUN_QUERY):
@@ -418,9 +423,9 @@ class SumoLogicConnector(BaseConnector):
         elif (action == self.ACTION_ID_GET_RESULTS):
             result = self._get_results(param)
         elif (action == self.ACTION_ID_ON_POLL):
-            return self._on_poll(param)
-        elif (action == "delete job"):
-            return self._handle_delete_job(param)
+            result = self._on_poll(param)
+        elif (action == self.ACTION_ID_DELETE_JOB):
+            result = self._delete_job(param)
 
         return result
 
