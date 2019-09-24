@@ -99,7 +99,7 @@
             "default": 5
         },
         "search_by_receipt_time": {
-            "description": "set byReceiptTime flag when creating search job",
+            "description": "Set byReceiptTime flag when creating search job",
             "data_type": "boolean",
             "order": 10,
             "default": false,
@@ -405,7 +405,7 @@
                 },
                 {
                     "data_path": "action_result.parameter.from_time",
-                    "data_type": "string",
+                    "data_type": "numeric",
                     "example_values": [
                         1545301292
                     ]
@@ -429,7 +429,7 @@
                 },
                 {
                     "data_path": "action_result.parameter.to_time",
-                    "data_type": "string",
+                    "data_type": "numeric",
                     "example_values": [
                         1545819692
                     ]
@@ -588,7 +588,7 @@
         },
         {
             "action": "delete job",
-            "description": "delete a search job",
+            "description": "Delete a search job",
             "verbose": "<p>This action takes a Search Job ID as its primary parameter.</p><p>This action deletes any existing Search Job. The Sumo Logic platform deletes the Search Job after an unknown amount of time, resulting in the action failing even though the search job ID may be correct.</p>",
             "type": "generic",
             "identifier": "delete_job",
