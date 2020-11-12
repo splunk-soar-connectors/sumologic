@@ -4,5 +4,6 @@ Makefile
 __init__.py
 .git*
 .gitlab-ci.yml
-sumologic_consts.py
 *.py
+whitesource-results
+sumologic_consts.py
