@@ -1,1 +1,2 @@
+requests==2.25.0
 sumologic==0.1.7
