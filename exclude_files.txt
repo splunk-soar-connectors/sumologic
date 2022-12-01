@@ -1,9 +1,5 @@
 docker-compose.yml
-sumologic_connector.py
 Makefile
-__init__.py
 .git*
 .gitlab-ci.yml
-*.py
 whitesource-results
-sumologic_consts.py

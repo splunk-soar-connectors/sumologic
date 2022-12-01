@@ -15,19 +15,19 @@
 #
 #
 # Phantom imports
+import imp
+import json
 import time
 
 import phantom.app as phantom
+import requests
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-import sumologic_parser
 import sumologic
-from sumologic_consts import *
-import requests
-import json
 
-import imp
+from . import sumologic_parser
+from .sumologic_consts import *
 
 
 class SumoLogicConnector(BaseConnector):
@@ -250,7 +250,7 @@ class SumoLogicConnector(BaseConnector):
 
                     action_result.set_summary(
                         {"total_objects": len(response["records"]), "search_id": search_job['id']})
-            except Exception as e:
+            except Exception:
                 message = "The specified job could not be retrieved. If the response type was 'records', make sure that the query supplied is an aggregation query."
                 return action_result.set_status(phantom.APP_ERROR, message)
 
@@ -322,7 +322,7 @@ class SumoLogicConnector(BaseConnector):
                 except Exception as e:
                     self.save_progress("Error deleting search job. Continuing: " + str(e))
 
-            except Exception as e:
+            except Exception:
 
                 try:
                     if config.get('delete_job_when_finished', False):
@@ -352,7 +352,7 @@ class SumoLogicConnector(BaseConnector):
 
             message_parser = imp.new_module("custom_parser")  # noqa
             try:
-                exec parser in message_parser.__dict__
+                exec(parser, message_parser.__dict__)
                 ret_dict_list = message_parser.message_parser(response, query)
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Unable to execute message parser: {0}".format(str(e)))
@@ -440,8 +440,9 @@ class SumoLogicConnector(BaseConnector):
 
 if __name__ == '__main__':
 
-    import pudb
     import argparse
+
+    import pudb
 
     pudb.set_trace()
 
@@ -466,7 +467,7 @@ if __name__ == '__main__':
     if (username and password):
         login_url = BaseConnector._get_phantom_base_url() + "login"
         try:
-            print ("Accessing the Login page")
+            print("Accessing the Login page")
             r = requests.get(login_url, verify=False)
             csrftoken = r.cookies['csrftoken']
 
@@ -479,17 +480,17 @@ if __name__ == '__main__':
             headers['Cookie'] = 'csrftoken=' + csrftoken
             headers['Referer'] = login_url
 
-            print ("Logging into Platform to get the session id")
+            print("Logging into Platform to get the session id")
             r2 = requests.post(login_url, verify=False, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
-            print ("Unable to get session id from the platfrom. Error: " + str(e))
+            print(("Unable to get session id from the platfrom. Error: " + str(e)))
             exit(1)
 
     with open(args.input_test_json) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
-        print(json.dumps(in_json, indent=4))
+        print((json.dumps(in_json, indent=4)))
 
         connector = SumoLogicConnector()
         connector.print_progress_message = True
@@ -499,6 +500,6 @@ if __name__ == '__main__':
             connector._set_csrf_info(csrftoken, headers['Referer'])
 
         ret_val = connector._handle_action(json.dumps(in_json), None)
-        print (json.dumps(json.loads(ret_val), indent=4))
+        print((json.dumps(json.loads(ret_val), indent=4)))
 
     exit(0)

@@ -13,7 +13,8 @@
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
 import datetime
-from phantom.utils import is_ip, is_url, is_email, is_hash, is_md5, is_sha1, is_sha256
+
+from phantom.utils import is_email, is_hash, is_ip, is_md5, is_sha1, is_sha256, is_url
 
 
 def _format_to_cef_key(key):
@@ -45,7 +46,7 @@ def _update_cef_types(cef, cef_types):
     :type cef_types: dict
     """
 
-    for k, v in cef.iteritems():
+    for k, v in cef.items():
         if is_ip(v):
             cef_types[k] = [ 'ip' ]
         elif is_url(v):
@@ -62,7 +63,7 @@ def _update_cef_types(cef, cef_types):
             else:
                 cef_types[k] = [ 'hash' ]
 
-    if 'hostname' in cef.keys():
+    if 'hostname' in list(cef.keys()):
         cef_types['hostname'] = [ 'host name' ]
 
 
@@ -142,7 +143,7 @@ def message_parser(response, query):
         artifact_json['cef'] = cef
         artifact_json['cef_types'] = cef_types
 
-        for k, v in info.iteritems():
+        for k, v in info.items():
             cef[_format_to_cef_key(k)] = v
 
         _update_cef_types(cef, cef_types)

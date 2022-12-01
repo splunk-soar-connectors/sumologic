@@ -4,13 +4,14 @@
     "description": "This app integrates with the Sumo Logic cloud platform to implement investigative actions",
     "publisher": "Splunk",
     "type": "siem",
-    "main_module": "sumologic_connector.pyc",
-    "app_version": "2.0.15",
+    "main_module": "sumologic_connector.py",
+    "app_version": "2.0.16",
     "utctime_updated": "2022-01-07T22:04:24.000000Z",
     "package_name": "phantom_sumologic",
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
     "product_version_regex": ".*",
+    "python_version": "3",
     "min_phantom_version": "4.2.7532",
     "logo": "logo_sumologic.svg",
     "logo_dark": "logo_sumologic_dark.svg",
@@ -19,7 +20,7 @@
         "wheel": [
             {
                 "module": "sumologic",
-                "input_file": "wheels/sumologic_sdk-0.1.7-py2-none-any.whl"
+                "input_file": "wheels/sumologic_sdk-0.1.13-py3-none-any.whl"
             }
         ]
     },
