@@ -25,9 +25,8 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 import sumologic
-
-from . import sumologic_parser
-from .sumologic_consts import *
+import sumologic_parser
+from sumologic_consts import *
 
 
 class SumoLogicConnector(BaseConnector):
