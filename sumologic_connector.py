@@ -118,7 +118,7 @@ class SumoLogicConnector(BaseConnector):
 
         search_job = {"id": param[SUMOLOGIC_JSON_JOB_ID]}
         try:
-
+            self.debug_print("searching job status")
             status = self._sumo.search_job_status(search_job)
 
         except Exception as e:
