@@ -250,7 +250,8 @@ class SumoLogicConnector(BaseConnector):
                     action_result.set_summary(
                         {"total_objects": len(response["records"]), "search_id": search_job['id']})
             except Exception:
-                message = "The specified job could not be retrieved. If the response type was 'records', make sure that the query supplied is an aggregation query."
+                message = "The specified job could not be retrieved. \
+                    If the response type was 'records', make sure that the query supplied is an aggregation query."
                 return action_result.set_status(phantom.APP_ERROR, message)
 
             action_result.add_data(response)
@@ -337,7 +338,10 @@ class SumoLogicConnector(BaseConnector):
                 self.save_progress("Search job ({}) not completed, returning: {}".format(search_job['id'], status['state']))
                 return action_result.get_status()
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error occurred while fetching the search job details. Error: {}".format(str(e)))
+                return action_result.set_status(
+                    phantom.APP_ERROR,
+                    "Error occurred while fetching the search job details. Error: {}".format(str(e))
+                )
 
         self.save_progress("Processing response")
 
