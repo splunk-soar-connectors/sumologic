@@ -1,16 +1,16 @@
 [comment]: # "Auto-generated SOAR connector documentation"
 # Sumo Logic
 
-Publisher: Splunk  
-Connector Version: 2\.0\.14  
+Publisher: Splunk Community  
+Connector Version: 3\.0\.0  
 Product Vendor: Sumo Logic  
 Product Name: Sumo Logic  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 4\.2\.7532  
+Minimum Product Version: 5\.4\.0  
 
 This app integrates with the Sumo Logic cloud platform to implement investigative actions
 
-[comment]: # " File: readme.md"
+[comment]: # " File: README.md"
 [comment]: # "  Copyright (c) 2016-2023 Splunk Inc."
 [comment]: # ""
 [comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"
@@ -114,33 +114,33 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **search\_id** |  required  | Search id | string |  `search id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.search\_id | string |  `search id` 
-action\_result\.data\.\*\.fields\.\*\.fieldType | string | 
-action\_result\.data\.\*\.fields\.\*\.keyField | boolean | 
-action\_result\.data\.\*\.fields\.\*\.name | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_blockid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_collector | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_collectorid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_format | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_messagecount | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_messageid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_messagetime | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_raw | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_receipttime | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_size | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_source | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourcecategory | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourcehost | string |  `ip` 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourceid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourcename | string | 
-action\_result\.summary\.search\_id | string |  `search id` 
-action\_result\.summary\.total\_objects | numeric | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action\_result\.status | string |  |   success  failed 
+action\_result\.parameter\.search\_id | string |  `search id`  |   177C7C195542A613 
+action\_result\.data\.\*\.fields\.\*\.fieldType | string |  |   long 
+action\_result\.data\.\*\.fields\.\*\.keyField | boolean |  |   True  False 
+action\_result\.data\.\*\.fields\.\*\.name | string |  |   \_collectorid 
+action\_result\.data\.\*\.messages\.\*\.map\.\_blockid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_collector | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_collectorid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_format | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_messagecount | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_messageid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_messagetime | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_raw | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_receipttime | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_size | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_source | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourcecategory | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourcehost | string |  `ip`  |   1\.1\.1\.1 
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourceid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourcename | string |  |  
+action\_result\.summary\.search\_id | string |  `search id`  |   177C7C195542A613 
+action\_result\.summary\.total\_objects | numeric |  |   1 
+action\_result\.message | string |  |  
+summary\.total\_objects | numeric |  |   1 
+summary\.total\_objects\_successful | numeric |  |   1   
 
 ## action: 'run query'
 Runs a search query on the Sumo Logic platform
@@ -160,37 +160,37 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **type** |  optional  | Type of response to receive | string | 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.from\_time | numeric | 
-action\_result\.parameter\.limit | numeric | 
-action\_result\.parameter\.query | string |  `sumo logic query` 
-action\_result\.parameter\.to\_time | numeric | 
-action\_result\.parameter\.type | string | 
-action\_result\.data\.\*\.fields\.\*\.fieldType | string | 
-action\_result\.data\.\*\.fields\.\*\.keyField | boolean | 
-action\_result\.data\.\*\.fields\.\*\.name | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_blockid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_collector | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_collectorid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_format | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_messagecount | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_messageid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_messagetime | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_raw | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_receipttime | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_size | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_source | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourcecategory | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourcehost | string |  `ip` 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourceid | string | 
-action\_result\.data\.\*\.messages\.\*\.map\.\_sourcename | string | 
-action\_result\.summary\.search\_id | string |  `search id` 
-action\_result\.summary\.total\_objects | numeric | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric |   
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action\_result\.status | string |  |   success  failed 
+action\_result\.parameter\.from\_time | numeric |  |   1545301292 
+action\_result\.parameter\.limit | numeric |  |   100 
+action\_result\.parameter\.query | string |  `sumo logic query`  |   \_sourceCategory="uploads/linux/system" 
+action\_result\.parameter\.to\_time | numeric |  |   1545819692 
+action\_result\.parameter\.type | string |  |   messages 
+action\_result\.data\.\*\.fields\.\*\.fieldType | string |  |   long 
+action\_result\.data\.\*\.fields\.\*\.keyField | boolean |  |   False  True 
+action\_result\.data\.\*\.fields\.\*\.name | string |  |   \_blockid 
+action\_result\.data\.\*\.messages\.\*\.map\.\_blockid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_collector | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_collectorid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_format | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_messagecount | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_messageid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_messagetime | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_raw | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_receipttime | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_size | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_source | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourcecategory | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourcehost | string |  `ip`  |   1\.1\.1\.1 
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourceid | string |  |  
+action\_result\.data\.\*\.messages\.\*\.map\.\_sourcename | string |  |  
+action\_result\.summary\.search\_id | string |  `search id`  |   177C7C195542A613 
+action\_result\.summary\.total\_objects | numeric |  |   0 
+action\_result\.message | string |  |   Total objects\: 0, Search id\: 177C7C195542A613 
+summary\.total\_objects | numeric |  |   1 
+summary\.total\_objects\_successful | numeric |  |   1   
 
 ## action: 'delete job'
 Delete a search job
@@ -206,13 +206,13 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **search\_id** |  required  | Search id | string |  `search id` 
 
 #### Action Output
-DATA PATH | TYPE | CONTAINS
---------- | ---- | --------
-action\_result\.status | string | 
-action\_result\.parameter\.search\_id | string |  `search id` 
-action\_result\.data\.\*\.search\_id | string |  `search id` 
-action\_result\.summary\.search\_id | string |  `search id` 
-action\_result\.summary\.total\_objects | numeric | 
-action\_result\.message | string | 
-summary\.total\_objects | numeric | 
-summary\.total\_objects\_successful | numeric | 
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action\_result\.status | string |  |   success  failed 
+action\_result\.parameter\.search\_id | string |  `search id`  |   177C7C195542A613 
+action\_result\.data\.\*\.search\_id | string |  `search id`  |   177C7C195542A613 
+action\_result\.summary\.search\_id | string |  `search id`  |   177C7C195542A613 
+action\_result\.summary\.total\_objects | numeric |  |   1 
+action\_result\.message | string |  |  
+summary\.total\_objects | numeric |  |   1 
+summary\.total\_objects\_successful | numeric |  |   1 
