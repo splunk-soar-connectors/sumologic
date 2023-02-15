@@ -11,7 +11,7 @@ Minimum Product Version: 4\.2\.7532
 This app integrates with the Sumo Logic cloud platform to implement investigative actions
 
 [comment]: # " File: readme.md"
-[comment]: # "  Copyright (c) 2016-2019 Splunk Inc."
+[comment]: # "  Copyright (c) 2016-2023 Splunk Inc."
 [comment]: # ""
 [comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"
 [comment]: # "you may not use this file except in compliance with the License."
