@@ -1,0 +1,9 @@
+Splunk SOAR Sumo Logic
+Copyright (c) 2016-2023 Splunk Inc.
+
+Third-party Software Attributions:
+
+Library: requests
+Version: 2.25.0
+License: Apache 2.0
+Kenneth Reitz

@@ -2,24 +2,46 @@
     "appid": "8e235e70-57eb-4292-9b7c-6cc44847d837",
     "name": "Sumo Logic",
     "description": "This app integrates with the Sumo Logic cloud platform to implement investigative actions",
-    "publisher": "Splunk",
+    "publisher": "Splunk Community",
     "type": "siem",
-    "main_module": "sumologic_connector.pyc",
-    "app_version": "2.0.15",
-    "utctime_updated": "2019-09-24T23:01:38.000000Z",
+    "main_module": "sumologic_connector.py",
+    "app_version": "3.0.0",
+    "utctime_updated": "2022-01-07T22:04:24.000000Z",
     "package_name": "phantom_sumologic",
     "product_name": "Sumo Logic",
     "product_vendor": "Sumo Logic",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.2.7532",
+    "python_version": "3",
+    "fips_compliant": false,
+    "min_phantom_version": "5.4.0",
     "logo": "logo_sumologic.svg",
     "logo_dark": "logo_sumologic_dark.svg",
-    "license": "Copyright (c) 2016-2019 Splunk Inc.",
+    "license": "Copyright (c) 2016-2023 Splunk Inc.",
     "pip_dependencies": {
         "wheel": [
             {
-                "module": "sumologic",
-                "input_file": "wheels/sumologic_sdk-0.1.7-py2-none-any.whl"
+                "module": "certifi",
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
+            },
+            {
+                "module": "chardet",
+                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
+            },
+            {
+                "module": "requests",
+                "input_file": "wheels/shared/requests-2.25.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "sumologic_sdk",
+                "input_file": "wheels/py3/sumologic_sdk-0.1.9-py3-none-any.whl"
+            },
+            {
+                "module": "urllib3",
+                "input_file": "wheels/shared/urllib3-1.26.14-py2.py3-none-any.whl"
             }
         ]
     },

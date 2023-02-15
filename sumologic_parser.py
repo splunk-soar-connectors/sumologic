@@ -1,13 +1,20 @@
 # File: sumologic_parser.py
-# Copyright (c) 2016-2019 Splunk Inc.
 #
-# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
-# without a valid written license from Splunk Inc. is PROHIBITED.
+# Copyright (c) 2016-2023 Splunk Inc.
 #
-# --
-
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
 import datetime
-from phantom.utils import is_ip, is_url, is_email, is_hash, is_md5, is_sha1, is_sha256
+
+from phantom.utils import is_email, is_hash, is_ip, is_md5, is_sha1, is_sha256, is_url
 
 
 def _format_to_cef_key(key):
@@ -39,7 +46,7 @@ def _update_cef_types(cef, cef_types):
     :type cef_types: dict
     """
 
-    for k, v in cef.iteritems():
+    for k, v in cef.items():
         if is_ip(v):
             cef_types[k] = [ 'ip' ]
         elif is_url(v):
@@ -56,7 +63,7 @@ def _update_cef_types(cef, cef_types):
             else:
                 cef_types[k] = [ 'hash' ]
 
-    if 'hostname' in cef.keys():
+    if 'hostname' in list(cef.keys()):
         cef_types['hostname'] = [ 'host name' ]
 
 
@@ -136,7 +143,7 @@ def message_parser(response, query):
         artifact_json['cef'] = cef
         artifact_json['cef_types'] = cef_types
 
-        for k, v in info.iteritems():
+        for k, v in info.items():
             cef[_format_to_cef_key(k)] = v
 
         _update_cef_types(cef, cef_types)
