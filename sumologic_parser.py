@@ -1,6 +1,6 @@
 # File: sumologic_parser.py
 #
-# Copyright (c) 2016-2023 Splunk Inc.
+# Copyright (c) 2016-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ def _format_to_cef_key(key):
     :rtype: string
     """
 
-    parts = key.split('_')
-    if key.startswith('_'):
+    parts = key.split("_")
+    if key.startswith("_"):
         parts = parts[1:]
     if len(parts) >= 2:
         for i, p in enumerate(parts[1:], 1):
@@ -48,23 +48,23 @@ def _update_cef_types(cef, cef_types):
 
     for k, v in cef.items():
         if is_ip(v):
-            cef_types[k] = [ 'ip' ]
+            cef_types[k] = ["ip"]
         elif is_url(v):
-            cef_types[k] = [ 'url' ]
+            cef_types[k] = ["url"]
         elif is_email(v):
-            cef_types[k] = [ 'email' ]
+            cef_types[k] = ["email"]
         elif is_hash(v):
             if is_md5(v):
-                cef_types[k] = [ 'hash', 'md5' ]
+                cef_types[k] = ["hash", "md5"]
             elif is_sha1(v):
-                cef_types[k] = [ 'hash', 'sha1' ]
+                cef_types[k] = ["hash", "sha1"]
             elif is_sha256(v):
-                cef_types[k] = [ 'hash', 'sha256' ]
+                cef_types[k] = ["hash", "sha256"]
             else:
-                cef_types[k] = [ 'hash' ]
+                cef_types[k] = ["hash"]
 
-    if 'hostname' in list(cef.keys()):
-        cef_types['hostname'] = [ 'host name' ]
+    if "hostname" in list(cef.keys()):
+        cef_types["hostname"] = ["host name"]
 
 
 def message_parser(response, query):
@@ -110,10 +110,10 @@ def message_parser(response, query):
 
     ret_list = []
 
-    if 'messages' in response:
-        items = response['messages']
-    elif 'records' in response:
-        items = response['records']
+    if "messages" in response:
+        items = response["messages"]
+    elif "records" in response:
+        items = response["records"]
     else:
         return []
 
@@ -127,21 +127,19 @@ def message_parser(response, query):
         container_json = {}
         artifact_list = [artifact_json]
 
-        ret['artifacts'] = artifact_list
-        ret['container'] = container_json
+        ret["artifacts"] = artifact_list
+        ret["container"] = container_json
         cef = {}
         cef_types = {}
 
-        container_json['name'] = 'Container created on {0}'.format(
-                    datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
-                )
-        container_json['description'] = "Sumologic Ingestion"
+        container_json["name"] = "Container created on {}".format(datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+        container_json["description"] = "Sumologic Ingestion"
 
-        info = it['map']
+        info = it["map"]
 
-        artifact_json['run_automation'] = False
-        artifact_json['cef'] = cef
-        artifact_json['cef_types'] = cef_types
+        artifact_json["run_automation"] = False
+        artifact_json["cef"] = cef
+        artifact_json["cef_types"] = cef_types
 
         for k, v in info.items():
             cef[_format_to_cef_key(k)] = v
