@@ -680,10 +680,6 @@
     "pip39_dependencies": {
         "wheel": [
             {
-                "module": "chardet",
-                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
-            },
-            {
                 "module": "sumologic_sdk",
                 "input_file": "wheels/py3/sumologic_sdk-0.1.9-py3-none-any.whl"
             }
