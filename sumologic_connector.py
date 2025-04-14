@@ -21,10 +21,10 @@ import time
 
 import phantom.app as phantom
 import requests
-import sumologic
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
+import sumologic
 import sumologic_parser
 from sumologic_consts import *
 
