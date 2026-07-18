@@ -18,6 +18,7 @@
 import imp
 import json
 import time
+from urllib.parse import quote
 
 import phantom.app as phantom
 import requests
@@ -102,14 +103,15 @@ class SumoLogicConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         try:
-            self.save_progress(f"deleting search job: {param[SUMOLOGIC_JSON_JOB_ID]}")
-            status = self._sumo.delete(f"/search/jobs/{param[SUMOLOGIC_JSON_JOB_ID]}")
+            search_id = quote(str(param[SUMOLOGIC_JSON_JOB_ID]), safe="")
+            self.save_progress(f"deleting search job: {search_id}")
+            status = self._sumo.delete(f"/search/jobs/{search_id}")
             self.debug_print(f"Status: {status}")
 
         except Exception as e:
             return action_result.set_status(phantom.APP_ERROR, "Could not find the specified job.  It may have been deleted by Sumo Logic.", e)
 
-        self.save_progress(f"deleted search job: {param[SUMOLOGIC_JSON_JOB_ID]}")
+        self.save_progress(f"deleted search job: {search_id}")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_results(self, param):
@@ -118,7 +120,7 @@ class SumoLogicConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        search_job = {"id": param[SUMOLOGIC_JSON_JOB_ID]}
+        search_job = {"id": quote(str(param[SUMOLOGIC_JSON_JOB_ID]), safe="")}
         try:
             self.debug_print("searching job status")
             status = self._sumo.search_job_status(search_job)

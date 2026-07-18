@@ -1,3 +1,3 @@
 **Unreleased**
 
-* Updated connector validation tooling.
+* Safely encode search IDs before sending Search Job API requests.
