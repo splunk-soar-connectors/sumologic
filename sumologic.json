@@ -16,7 +16,7 @@
     "min_phantom_version": "5.4.0",
     "logo": "logo_sumologic.svg",
     "logo_dark": "logo_sumologic_dark.svg",
-    "license": "Copyright (c) 2016-2025 Splunk Inc.",
+    "license": "Copyright (c) 2016-2026 Splunk Inc.",
     "configuration": {
         "environment": {
             "description": "Environment Pod",
@@ -678,6 +678,14 @@
         }
     ],
     "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "sumologic_sdk",
+                "input_file": "wheels/py3/sumologic_sdk-0.1.9-py3-none-any.whl"
+            }
+        ]
+    },
+    "pip313_dependencies": {
         "wheel": [
             {
                 "module": "sumologic_sdk",
