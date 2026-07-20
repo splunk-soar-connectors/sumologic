@@ -1,7 +1,7 @@
 # Sumo Logic
 
 Publisher: Splunk Community <br>
-Connector Version: 3.0.1 <br>
+Connector Version: 3.0.2 <br>
 Product Vendor: Sumo Logic <br>
 Product Name: Sumo Logic <br>
 Minimum Product Version: 5.4.0
