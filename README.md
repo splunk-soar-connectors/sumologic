@@ -22,7 +22,6 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **max_messages** | optional | numeric | Max messages to poll for |
 **on_poll_query** | optional | string | Query to use during polling |
 **type** | optional | string | Poll for messages or records |
-**message_parser** | optional | file | Python file containing a message parsing method |
 **first_run_previous_days** | optional | numeric | Start polling from this many days back (minimum 1 day) |
 **search_by_receipt_time** | optional | boolean | Set byReceiptTime flag when creating search job |
 
@@ -58,7 +57,7 @@ Run a query on Sumo Logic and ingest the results
 Type: **ingest** <br>
 Read only: **True**
 
-This will run a search for logs that have occurred since the end of the scheduled poll. Since there is a limit of 10,000 messages, if there would be more than 10,000 results in the specified job search, the oldest ones will be discarded.<br>When running <b>POLL NOW</b>, it will run from the time of the last scheduled poll, but will not change which messages the next scheduled poll will receive.</br></br>In order to use this action, a parser method should be provided as a Python file, since almost every log will be different. Provided below is a file which will be used as a fallback and can also serve as a starting point. In order to properly work, the provided file needs a few things.<ul><li>There must be a function named <b>message_parser</b></li><li>It must accept two parameters<ul><li>A response, which will be returned by the endpoints to either get messages or records from a search job (more info <a href="https://help.sumologic.com/APIs/About-the-Search-Job-API">here</a>)</li><li>The query string, which will be the same one from the asset config</li></ul></li><li>It must return a list of dictionaries. Each dictionary will have a container and a list of artifacts to add to that container. These should match the JSON objects that a POST to <b>/rest/container</b> and <b>/rest/artifact</b> expect</li></ul><br><a href="/app_resource/sumologic_8e235e70-57eb-4292-9b7c-6cc44847d837/sumologic_parser.py">Here is the (default) aforementioned parser file</a>.
+This will run a search for logs that have occurred since the end of the scheduled poll. Since there is a limit of 10,000 messages, if there would be more than 10,000 results in the specified job search, the oldest ones will be discarded.<br>When running <b>POLL NOW</b>, it will run from the time of the last scheduled poll, but will not change which messages the next scheduled poll will receive. Results are processed with the parser bundled with the connector.</br>
 
 #### Action Parameters
 

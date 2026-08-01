@@ -15,7 +15,6 @@
 #
 #
 # Phantom imports
-import imp
 import json
 import time
 from urllib.parse import quote
@@ -48,6 +47,11 @@ class SumoLogicConnector(BaseConnector):
 
     def initialize(self):
         self._state = self.load_state()
+        if self.get_config().get("message_parser"):
+            return self.set_status(
+                phantom.APP_ERROR,
+                "Custom message parsers are no longer supported; remove the legacy asset value before running actions",
+            )
         return phantom.APP_SUCCESS
 
     def finalize(self):
@@ -254,7 +258,7 @@ class SumoLogicConnector(BaseConnector):
 
         config = self.get_config()
 
-        job_type = config["type"]
+        job_type = config.get("type", "messages")
         if self.is_poll_now():
             limit = int(param.get("artifact_count", 100))
         else:
@@ -327,19 +331,7 @@ class SumoLogicConnector(BaseConnector):
         if not self.is_poll_now():
             self._state["last_query"] = to_time + 1
 
-        parser = config.get("message_parser")
-        if parser:
-            parser_name = config["message_parser__filename"]
-            self.save_progress(f"Using specified parser: {parser_name}")
-
-            message_parser = imp.new_module("custom_parser")
-            try:
-                exec(parser, message_parser.__dict__)
-                ret_dict_list = message_parser.message_parser(response, query)
-            except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, f"Unable to execute message parser: {e!s}")
-        else:  # No parser method provided, use default one instead
-            ret_dict_list = sumologic_parser.message_parser(response, query)
+        ret_dict_list = sumologic_parser.message_parser(response, query)
 
         max_container = param.get("container_count")
 
