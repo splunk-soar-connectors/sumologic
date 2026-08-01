@@ -23,11 +23,7 @@ def test_connector_contains_no_dynamic_execution_primitive():
     tree = ast.parse((ROOT / "sumologic_connector.py").read_text())
     forbidden = {"exec", "eval", "compile"}
 
-    calls = {
-        node.func.id
-        for node in ast.walk(tree)
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-    }
+    calls = {node.func.id for node in ast.walk(tree) if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
 
     assert calls.isdisjoint(forbidden)
 
