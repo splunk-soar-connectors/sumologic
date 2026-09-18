@@ -17,14 +17,15 @@
 # Phantom imports
 import json
 import time
+import types
 from urllib.parse import quote
 
 import phantom.app as phantom
 import requests
+import sumologic
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-import sumologic
 import sumologic_parser
 from sumologic_consts import *
 
@@ -47,11 +48,6 @@ class SumoLogicConnector(BaseConnector):
 
     def initialize(self):
         self._state = self.load_state()
-        if self.get_config().get("message_parser"):
-            return self.set_status(
-                phantom.APP_ERROR,
-                "Custom message parsers are no longer supported; remove the legacy asset value before running actions",
-            )
         return phantom.APP_SUCCESS
 
     def finalize(self):
@@ -331,7 +327,19 @@ class SumoLogicConnector(BaseConnector):
         if not self.is_poll_now():
             self._state["last_query"] = to_time + 1
 
-        ret_dict_list = sumologic_parser.message_parser(response, query)
+        parser = config.get("message_parser")
+        if parser:
+            parser_name = config["message_parser__filename"]
+            self.save_progress(f"Using specified parser: {parser_name}")
+
+            message_parser = types.ModuleType("custom_parser")
+            try:
+                exec(parser, message_parser.__dict__)  # nosec B102: asset field requires SOAR Edit Code permission
+                ret_dict_list = message_parser.message_parser(response, query)
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, f"Unable to execute message parser: {e!s}")
+        else:
+            ret_dict_list = sumologic_parser.message_parser(response, query)
 
         max_container = param.get("container_count")
 
@@ -361,12 +369,12 @@ class SumoLogicConnector(BaseConnector):
             artifacts[-1]["run_automation"] = True
 
         if hasattr(self, "save_artifacts"):
-            status, message, artifact_id = self.save_artifacts(artifacts)
+            status, message, _artifact_id = self.save_artifacts(artifacts)
             if phantom.is_fail(status):
                 return action_result.set_status(phantom.APP_ERROR, message)
         else:
             for artifact in artifacts:
-                status, message, artifact_id = self.save_artifact(artifact)
+                status, message, _artifact_id = self.save_artifact(artifact)
             if phantom.is_fail(status):
                 return action_result.set_status(phantom.APP_ERROR, message)
 
